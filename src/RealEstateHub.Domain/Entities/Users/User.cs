@@ -1,0 +1,23 @@
+using RealEstateHub.Domain.Enums;
+
+namespace RealEstateHub.Domain.Entities.Users;
+
+public abstract class User
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public string Email { get; set; } = string.Empty;
+    public string Phone { get; set; } = string.Empty;
+    public string FullName { get; set; } = string.Empty;
+    public string? AvatarUrl { get; set; }
+    public bool IsVerified { get; set; }
+    public string PasswordHash { get; set; } = string.Empty;
+    public List<RefreshToken> RefreshTokens { get; set; } = new();
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+    public abstract bool CanPostListing();
+    public abstract UserRole GetRole();
+
+    public virtual int GetMaxListings()
+        => 0;
+}

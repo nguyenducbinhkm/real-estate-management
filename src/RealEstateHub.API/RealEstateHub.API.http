@@ -1,0 +1,104 @@
+@host = http://localhost:5129
+
+### Register seller
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "seller.test@realestatehub.vn",
+  "phone": "0902000001",
+  "fullName": "Seller Test",
+  "password": "Password123!",
+  "role": "Seller"
+}
+
+### Login
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "seller.test@realestatehub.vn",
+  "password": "Password123!"
+}
+
+### Refresh token
+POST {{host}}/api/auth/refresh-token
+Content-Type: application/json
+
+{
+  "refreshToken": "PASTE_REFRESH_TOKEN"
+}
+
+### List listings
+GET {{host}}/api/listings?page=1&pageSize=20
+
+### Get listing
+GET {{host}}/api/listings/20000000-0000-0000-0000-000000000001
+
+### Create listing
+POST {{host}}/api/listings
+Authorization: Bearer PASTE_ACCESS_TOKEN
+Content-Type: application/json
+
+{
+  "propertyType": "Apartment",
+  "transactionType": "ForSale",
+  "title": "Căn hộ 2PN Quận 7",
+  "description": "Căn hộ mới, gần trường học và trung tâm thương mại.",
+  "price": 3800000000,
+  "area": 72,
+  "provinceCode": "79",
+  "provinceName": "Ho Chi Minh",
+  "districtCode": "749",
+  "districtName": "Quan 7",
+  "wardCode": "27070",
+  "wardName": "Tan Hung",
+  "streetAddress": "Duong Nguyen Luong Bang",
+  "bedroomCount": 2,
+  "bathroomCount": 2,
+  "floorNumber": 15,
+  "legalStatus": "PinkBook",
+  "furniture": "Full"
+}
+
+### Update listing
+PUT {{host}}/api/listings/20000000-0000-0000-0000-000000000001
+Authorization: Bearer PASTE_ACCESS_TOKEN
+Content-Type: application/json
+
+{
+  "propertyType": "Apartment",
+  "transactionType": "ForSale",
+  "title": "Căn hộ 2PN Midtown Phú Mỹ Hưng",
+  "description": "Đã cập nhật thông tin căn hộ.",
+  "price": 4900000000,
+  "area": 68,
+  "provinceCode": "79",
+  "provinceName": "Ho Chi Minh",
+  "districtCode": "749",
+  "districtName": "Quan 7",
+  "wardCode": "27070",
+  "wardName": "Tan Hung",
+  "streetAddress": "Duong Nguyen Luong Bang",
+  "bedroomCount": 2,
+  "bathroomCount": 2,
+  "floorNumber": 12,
+  "legalStatus": "PinkBook",
+  "furniture": "Basic"
+}
+
+### My listings
+GET {{host}}/api/listings/my
+Authorization: Bearer PASTE_ACCESS_TOKEN
+
+### Delete listing
+DELETE {{host}}/api/listings/20000000-0000-0000-0000-000000000001
+Authorization: Bearer PASTE_ACCESS_TOKEN
+
+### Logout
+POST {{host}}/api/auth/logout
+Content-Type: application/json
+
+{
+  "refreshToken": "PASTE_REFRESH_TOKEN"
+}
