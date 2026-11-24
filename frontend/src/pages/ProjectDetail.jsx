@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { projectService } from '../services/projectService';
 import PropertyCard from '../components/property/PropertyCard';
-import ProjectCard, { ProjectImageCredits, StatusBadge } from '../components/projects/ProjectCard';
+import ProjectCard, { FeaturedBadge, ProjectImageCredits, StatusBadge } from '../components/projects/ProjectCard';
 import NewsImage, { ImageCredit } from '../components/news/NewsImage';
+import { AreaIcon, CameraIcon } from '../components/property/PropertyIcons';
 import Spinner from '../components/ui/Spinner';
 import { getProjectImage } from '../data/projectImages';
 import { formatDate, formatHectare, formatMoney, formatPriceRange, projectLocation, statusInfo } from '../config/projectOptions';
@@ -88,8 +89,8 @@ export default function ProjectDetail() {
   const address = [project.streetAddress, project.wardName, project.districtName, project.provinceName].filter(Boolean).join(', ');
 
   return (
-    <div className="bg-white">
-      <div className="border-b border-slate-200">
+    <div>
+      <div className="border-b border-slate-100 bg-white">
         <nav aria-label="Breadcrumb" className="mx-auto max-w-7xl truncate px-4 py-3 text-sm text-slate-500">
           <Link to="/projects" className="hover:text-brand-600">Dự án</Link>
           <span className="mx-1.5">/</span>
@@ -101,23 +102,31 @@ export default function ProjectDetail() {
 
       <div className="mx-auto max-w-7xl px-4 py-8">
         <figure>
-          <div className="relative overflow-hidden rounded-2xl">
-            <NewsImage image={image} eager className="h-64 w-full md:h-[420px]" />
-            <span className="absolute bottom-3 right-3 rounded bg-black/60 px-2 py-1 text-xs text-white">Ảnh minh họa khu vực</span>
+          <div className="group relative overflow-hidden rounded-3xl">
+            <NewsImage image={image} eager className="h-64 w-full transition-transform duration-1000 ease-out group-hover:scale-105 md:h-[420px]" />
+            <span className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink-900/50 via-transparent to-ink-900/15" aria-hidden="true" />
+            <StatusBadge status={project.status} className="absolute left-4 top-4" />
+            {project.isFeatured && <FeaturedBadge label="Dự án nổi bật" className="absolute right-4 top-4" />}
+            {project.totalArea > 0 && (
+              <span className="absolute bottom-4 left-4 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-sm font-semibold text-ink shadow-sm">
+                <AreaIcon className="h-4 w-4 text-brand-600" />
+                {formatHectare(project.totalArea)}
+              </span>
+            )}
+            <span className="absolute bottom-4 right-4 inline-flex items-center gap-1.5 rounded-full bg-black/35 px-3 py-1 text-xs text-white backdrop-blur-sm">
+              <CameraIcon className="h-3.5 w-3.5" />
+              Ảnh minh họa khu vực
+            </span>
           </div>
           <figcaption className="mt-2"><ImageCredit image={image} /></figcaption>
         </figure>
 
         <div className="mt-6 grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px]">
           <article className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <StatusBadge status={project.status} />
-              {project.isFeatured && <span className="rounded-md bg-brand-600 px-2 py-1 text-xs font-semibold text-white">Dự án nổi bật</span>}
-            </div>
-            <h1 className="mt-3 text-3xl font-extrabold text-ink md:text-4xl">{project.name}</h1>
+            <h1 className="text-3xl font-extrabold text-ink md:text-4xl">{project.name}</h1>
             <p className="mt-2 text-slate-600">{address}</p>
 
-            <div className="mt-5 grid grid-cols-2 gap-4 rounded-xl border border-slate-200 p-4 sm:grid-cols-4">
+            <div className="mt-5 grid grid-cols-2 gap-4 rounded-3xl bg-brand-50/70 p-5 ring-1 ring-brand-100 sm:grid-cols-4">
               <Fact label="Khoảng giá" value={formatPriceRange(project.minPrice, project.maxPrice)} />
               <Fact label="Diện tích" value={formatHectare(project.totalArea)} />
               <Fact label="Giai đoạn" value={`${project.phaseCount} giai đoạn`} />
@@ -126,7 +135,7 @@ export default function ProjectDetail() {
 
             <nav aria-label="Mục lục dự án" className="sticky top-16 z-10 mt-6 flex gap-1 overflow-x-auto border-b border-slate-200 bg-white xl:top-[72px]">
               {sections.map(([anchor, label]) => (
-                <a key={anchor} href={`#${anchor}`} className="whitespace-nowrap px-3 py-3 text-sm font-semibold text-slate-600 hover:text-brand-600">
+                <a key={anchor} href={`#${anchor}`} className="my-1.5 whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-semibold text-slate-600 transition-colors hover:bg-brand-50 hover:text-brand-700">
                   {label}
                 </a>
               ))}
@@ -134,7 +143,7 @@ export default function ProjectDetail() {
 
             <section className="mt-8">
               <SectionTitle id="tong-quan">Tổng quan {project.name}</SectionTitle>
-              <dl className="mt-4 grid gap-x-6 gap-y-3 rounded-xl bg-slate-50 p-5 sm:grid-cols-2">
+              <dl className="mt-4 grid gap-x-6 gap-y-3 rounded-3xl bg-slate-50 p-5 sm:grid-cols-2">
                 {[
                   ['Chủ đầu tư', project.developer],
                   ['Trạng thái', status.label],
@@ -165,7 +174,7 @@ export default function ProjectDetail() {
                       <span className="absolute -left-[33px] top-0.5 grid h-6 w-6 place-items-center rounded-full bg-brand-600 text-xs font-bold text-white">
                         {phase.sortOrder}
                       </span>
-                      <div className="rounded-xl border border-slate-200 p-4">
+                      <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-card">
                         <div className="flex flex-wrap items-baseline justify-between gap-2">
                           <h3 className="font-bold text-ink">{phase.name}</h3>
                           {phase.startingPrice && <p className="text-sm font-bold text-brand-700">Giá từ {formatMoney(phase.startingPrice)}</p>}
@@ -193,7 +202,7 @@ export default function ProjectDetail() {
                     type="button"
                     disabled={listings.loading}
                     onClick={() => loadListings(listings.page + 1)}
-                    className="h-11 rounded-lg border border-slate-300 px-6 text-sm font-semibold text-ink hover:border-brand-500 disabled:opacity-50"
+                    className="h-11 rounded-full border border-brand-200 px-7 text-sm font-semibold text-brand-700 transition-colors hover:bg-brand-50 disabled:opacity-50"
                   >
                     {listings.loading ? 'Đang tải…' : `Xem thêm tin (${listings.total - listings.items.length})`}
                   </button>
@@ -212,17 +221,17 @@ export default function ProjectDetail() {
           </article>
 
           <aside className="h-fit space-y-4 lg:sticky lg:top-24">
-            <section className="rounded-xl border border-slate-200 p-5 shadow-card">
+            <section className="rounded-3xl border border-slate-100 bg-white p-5 shadow-card">
               <p className="text-sm text-slate-500">Khoảng giá</p>
               <p className="mt-1 text-2xl font-extrabold text-brand-700">{formatPriceRange(project.minPrice, project.maxPrice)}</p>
               <p className="mt-3 text-sm text-slate-600">Chủ đầu tư: <strong className="text-ink">{project.developer}</strong></p>
               <p className="mt-1 text-sm text-slate-600">Bàn giao dự kiến: <strong className="text-ink">{formatDate(project.handoverDate)}</strong></p>
-              <a href="#tin-dang" className="mt-4 flex h-11 items-center justify-center rounded-lg bg-brand-600 text-sm font-semibold text-white hover:bg-brand-700">
+              <a href="#tin-dang" className="mt-4 flex h-12 items-center justify-center rounded-full bg-brand-600 text-sm font-semibold text-white shadow-md shadow-brand-600/30 hover:bg-brand-700">
                 Xem {project.listingCount} tin đăng
               </a>
               <Link
                 to={`/projects?provinceCode=${project.provinceCode}`}
-                className="mt-2 flex h-11 items-center justify-center rounded-lg border border-slate-300 text-sm font-semibold text-ink hover:border-brand-500"
+                className="mt-2 flex h-12 items-center justify-center rounded-full border border-slate-200 text-sm font-semibold text-ink hover:border-brand-400 hover:text-brand-700"
               >
                 Dự án khác tại {project.provinceName}
               </Link>

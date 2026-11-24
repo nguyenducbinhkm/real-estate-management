@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSearchStore } from "../../store/searchStore";
 import { heroSlides, provinces } from "../../data/homeContent";
+import { parseSearchQuery } from "../../utils/searchParser";
 
 function SearchIcon() {
   return (
@@ -39,9 +40,11 @@ function ChevronDownIcon() {
 export default function HeroSearch() {
   const navigate = useNavigate();
   const setCriteria = useSearchStore((state) => state.setCriteria);
+  const setSearchText = useSearchStore((state) => state.setSearchText);
   const [keyword, setKeyword] = useState("");
   const [provinceCode, setProvinceCode] = useState("");
   const [slide, setSlide] = useState(0);
+  const [openProvince, setOpenProvince] = useState(false);
 
   // Tự động chuyển slide sau 6 giây
   useEffect(() => {
@@ -52,18 +55,33 @@ export default function HeroSearch() {
     return () => clearTimeout(timer);
   }, [slide]);
 
+  // Đóng dropdown khi click ra ngoài
+  useEffect(() => {
+    if (!openProvince) return;
+    const handleClickOutside = () => setOpenProvince(false);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [openProvince]);
+
+  // Hiểu câu tìm tự do thành bộ lọc thay vì so nguyên câu với tiêu đề tin:
+  // "căn hộ quận 7 dưới 5 tỷ" → loại = Căn hộ, khu vực = Quận 7 (TP.HCM), giá ≤ 5 tỷ;
+  // "cho thuê văn phòng" → giao dịch = Cho thuê, loại = Văn phòng. Phần chữ còn lại mới dùng làm từ khóa.
+  // Ô "Toàn quốc" chỉ áp dụng khi câu tìm không nêu tỉnh/thành.
   const submit = (event) => {
     event.preventDefault();
+    const text = keyword.trim();
+    const parsed = parseSearchQuery(text);
+    setSearchText(text);
     setCriteria({
-      keyword: keyword.trim(),
-      transactionType: "ForSale",
-      provinceCode,
-      propertyType: "",
-      districtCode: "",
-      minPrice: "",
-      maxPrice: "",
-      minArea: "",
-      maxArea: "",
+      keyword: parsed.keyword,
+      transactionType: parsed.transactionType || "",
+      propertyType: parsed.propertyType,
+      provinceCode: parsed.provinceCode || provinceCode,
+      districtCode: parsed.districtCode,
+      minPrice: parsed.minPrice,
+      maxPrice: parsed.maxPrice,
+      minArea: parsed.minArea,
+      maxArea: parsed.maxArea,
       page: 1,
     });
     navigate("/listings");
@@ -71,6 +89,9 @@ export default function HeroSearch() {
 
   const current = heroSlides[slide] || heroSlides[0];
   const nextSlide = heroSlides[(slide + 1) % heroSlides.length] || current;
+
+  const selectedProvinceName =
+    provinces.find(([code]) => code === provinceCode)?.[1] || "Toàn quốc";
 
   return (
     <section className="relative overflow-hidden bg-slate-950 py-12 md:py-16 lg:py-20">
@@ -83,9 +104,8 @@ export default function HeroSearch() {
             alt={index === slide ? item.imageAlt || "" : ""}
             aria-hidden={index !== slide}
             fetchpriority={index === 0 ? "high" : "auto"}
-            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
-              index === slide ? "opacity-100" : "opacity-0"
-            }`}
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${index === slide ? "opacity-100" : "opacity-0"
+              }`}
           />
         ) : null,
       )}
@@ -137,25 +157,44 @@ export default function HeroSearch() {
             {/* THANH TÌM KIẾM BO TRÒN TRẮNG (BỎ TAB MUA BÁN/DỰ ÁN) */}
             <form
               onSubmit={submit}
-              className="mt-6 flex flex-col gap-2 rounded-2xl bg-white p-2 shadow-2xl sm:flex-row sm:items-center sm:rounded-full"
+              className="mt-6 flex w-full max-w-xl flex-col gap-2 rounded-2xl bg-white p-2 shadow-2xl sm:flex-row sm:items-center sm:rounded-full"
             >
-              <div className="relative flex items-center border-b border-slate-200 px-3 sm:w-44 sm:border-b-0 sm:border-r">
-                <select
-                  id="hero-province"
-                  value={provinceCode}
-                  onChange={(event) => setProvinceCode(event.target.value)}
-                  className="h-11 w-full appearance-none bg-transparent pr-6 text-sm font-semibold text-slate-800 outline-none cursor-pointer"
+              <div className="relative flex items-center border-b border-slate-200 px-2 sm:w-40 sm:shrink-0 sm:border-b-0 sm:border-r">
+                <button
+                  type="button"
+                  onClick={() => setOpenProvince((v) => !v)}
+                  className="flex h-11 w-full items-center justify-center gap-1 bg-transparent px-3 text-center text-sm font-semibold text-slate-800 outline-none cursor-pointer"
                 >
-                  <option value="">Toàn quốc</option>
-                  {provinces.map(([code, name]) => (
-                    <option key={code} value={code}>
-                      {name}
-                    </option>
-                  ))}
-                </select>
-                <div className="pointer-events-none absolute right-3">
-                  <ChevronDownIcon />
-                </div>
+                  <span className="truncate">{selectedProvinceName}</span>
+                  <ChevronDownIcon
+                    className={`shrink-0 transition-transform duration-200 ${openProvince ? "rotate-180" : ""
+                      }`}
+                  />
+                </button>
+
+                {openProvince && (
+                  <div className="absolute left-0 top-full z-50 mt-2 w-full min-w-[200px] overflow-hidden rounded-2xl border border-slate-100 bg-white p-1.5 shadow-xl ring-1 ring-black/5">
+                    <ul className="max-h-64 overflow-y-auto">
+                      {provinces.map(([code, name]) => (
+                        <li key={code || "all"}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setProvinceCode(code);
+                              setOpenProvince(false);
+                            }}
+                            className={`flex w-full items-center justify-center rounded-xl px-3 py-2.5 text-center text-sm transition-colors ${provinceCode === code
+                                ? "bg-amber-50 font-semibold text-[#A37835]"
+                                : "text-slate-700 hover:bg-slate-50"
+                              }`}
+                          >
+                            {name}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
 
               <div className="flex flex-1 items-center gap-2.5 px-3">
@@ -164,7 +203,7 @@ export default function HeroSearch() {
                   id="hero-keyword"
                   value={keyword}
                   onChange={(event) => setKeyword(event.target.value)}
-                  placeholder="Nhập địa điểm, đường, tên dự án..."
+                  placeholder="VD: căn hộ quận 7 dưới 5 tỷ, cho thuê văn phòng…"
                   className="h-11 w-full bg-transparent text-sm text-slate-800 outline-none placeholder:text-slate-400"
                 />
               </div>
@@ -273,11 +312,10 @@ export default function HeroSearch() {
               type="button"
               aria-label={`Chuyển tới slide ${index + 1}`}
               onClick={() => setSlide(index)}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
-                index === slide
+              className={`h-1.5 rounded-full transition-all duration-300 ${index === slide
                   ? "w-8 bg-[#C5A880]"
                   : "w-2 bg-white/40 hover:bg-white/70"
-              }`}
+                }`}
             />
           ))}
         </div>

@@ -28,12 +28,12 @@ function ShareButtons({ title }) {
         href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="h-9 rounded-lg border border-slate-300 px-3 text-sm leading-9 text-ink hover:border-brand-500"
+        className="h-9 rounded-full border border-slate-200 px-4 text-sm leading-9 text-ink hover:border-brand-400 hover:text-brand-700"
         aria-label={`Chia sẻ "${title}" lên Facebook`}
       >
         Facebook
       </a>
-      <button type="button" onClick={copy} className="h-9 rounded-lg border border-slate-300 px-3 text-sm text-ink hover:border-brand-500">
+      <button type="button" onClick={copy} className="h-9 rounded-full border border-slate-200 px-4 text-sm text-ink hover:border-brand-400 hover:text-brand-700">
         {copied ? 'Đã chép link' : 'Chép link'}
       </button>
     </div>
@@ -100,7 +100,7 @@ export default function NewsDetail() {
           <p className="mt-6 text-lg font-semibold leading-relaxed text-ink">{article.summary}</p>
 
           <figure className="mt-6">
-            <NewsImage image={article.image} eager className="h-64 w-full rounded-xl md:h-[440px]" />
+            <NewsImage image={article.image} eager className="h-64 w-full rounded-3xl md:h-[440px]" />
             <figcaption className="mt-2">
               <ImageCredit image={article.image} />
             </figcaption>
@@ -117,7 +117,7 @@ export default function NewsDetail() {
             ))}
           </div>
 
-          <aside className="mt-10 rounded-xl border border-brand-300 bg-brand-50 p-5">
+          <aside className="mt-10 rounded-3xl border border-brand-100 bg-brand-50 p-5">
             <p className="text-sm text-slate-700">
               Bài viết được BS Realty tóm tắt từ <strong className="text-ink">{article.sourceName}</strong>. Số liệu và nhận định thuộc về nguồn gốc.
             </p>
@@ -129,7 +129,7 @@ export default function NewsDetail() {
           {article.tags?.length > 0 && (
             <div className="mt-6 flex flex-wrap gap-2">
               {article.tags.map((tag) => (
-                <Link key={tag} to={`/news?q=${encodeURIComponent(tag)}`} className="rounded-md bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-brand-50 hover:text-brand-700">
+                <Link key={tag} to={`/news?q=${encodeURIComponent(tag)}`} className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700 hover:bg-brand-50 hover:text-brand-700">
                   #{tag}
                 </Link>
               ))}
@@ -150,7 +150,7 @@ export default function NewsDetail() {
               <div className="mt-5 grid gap-5 sm:grid-cols-3">
                 {related.map((item) => (
                   <Link key={item.slug} to={`/news/${item.slug}`} className="group block">
-                    <div className="overflow-hidden rounded-xl">
+                    <div className="overflow-hidden rounded-2xl">
                       <NewsImage image={item.image} className="h-36 w-full transition-transform duration-500 group-hover:scale-105" />
                     </div>
                     <p className="mt-2 text-xs text-slate-500">{formatNewsDate(item.publishedAt)}</p>

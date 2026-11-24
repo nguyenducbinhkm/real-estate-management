@@ -5,7 +5,7 @@ import { provinces } from '../../data/homeContent';
 
 function Box({ title, children }) {
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-5">
+    <section className="rounded-3xl border border-slate-100 bg-white p-5 shadow-card">
       <h2 className="mb-3 text-base font-extrabold text-ink">{title}</h2>
       {children}
     </section>
@@ -22,7 +22,7 @@ const topics = [
   ['Sự kiện', '/news?category=S%E1%BB%B1%20ki%E1%BB%87n'],
   ['Quy hoạch - Pháp lý', '/wiki/quy-hoach-phap-ly'],
   ['Tài chính BĐS', '/wiki/tai-chinh'],
-  ['Biểu đồ giá', '/analysis/bieu-do-gia'],
+  ['Tính lãi vay', '/utilities/tinh-lai-vay'],
 ];
 
 export default function NewsSidebar({ excludeSlug }) {
@@ -80,7 +80,7 @@ export default function NewsSidebar({ excludeSlug }) {
       <Box title="Chủ đề nổi bật">
         <div className="flex flex-wrap gap-2">
           {topics.map(([label, to]) => (
-            <Link key={label} to={to} className="rounded-md bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-brand-50 hover:text-brand-700">
+            <Link key={label} to={to} className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700 hover:bg-brand-50 hover:text-brand-700">
               {label}
             </Link>
           ))}

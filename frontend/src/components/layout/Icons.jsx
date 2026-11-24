@@ -15,6 +15,23 @@ export function HeartIcon({ className = 'h-6 w-6' }) {
   );
 }
 
+export function UserIcon({ className = 'h-5 w-5' }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} {...base}>
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 21a8 8 0 0 1 16 0" />
+    </svg>
+  );
+}
+
+export function PlusIcon({ className = 'h-5 w-5' }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} {...base} strokeWidth={2.2}>
+      <path d="M12 5v14M5 12h14" />
+    </svg>
+  );
+}
+
 export function MenuIcon({ className = 'h-6 w-6' }) {
   return (
     <svg viewBox="0 0 24 24" className={className} {...base}>

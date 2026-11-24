@@ -60,7 +60,7 @@ export default function MobileDrawer({ open, onClose, user, onLogout }) {
   }, [open, onClose]);
 
   return (
-    <div className={`fixed inset-0 z-50 xl:hidden ${open ? '' : 'pointer-events-none'}`} aria-hidden={!open}>
+    <div className={`fixed inset-0 z-50 overflow-hidden lg:hidden ${open ? '' : 'pointer-events-none'}`} aria-hidden={!open}>
       <button
         type="button"
         aria-label="Đóng menu"
@@ -107,7 +107,6 @@ export default function MobileDrawer({ open, onClose, user, onLogout }) {
 
           <nav aria-label="Điều hướng chính" className="divide-y divide-slate-100 border-y border-slate-100">
             {mainMenu.map((item) => <Section key={item.label} item={item} />)}
-            <Link to="/saved" className="block px-5 py-3.5 text-[15px] text-[#2c2c2c]">Tin đã lưu</Link>
           </nav>
 
           {user && (

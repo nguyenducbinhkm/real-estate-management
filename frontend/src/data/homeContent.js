@@ -55,22 +55,54 @@ export const provinces = [
   ['56', 'Khánh Hòa'],
 ];
 
+// Ảnh từng tỉnh/thành cho khối "Bất động sản theo địa điểm".
+// Ảnh Wikimedia Commons theo giấy phép Creative Commons – phải ghi tác giả (hiện trên ô và trang /image-credits).
+const commonsThumb = (path, width = 1280) => `https://upload.wikimedia.org/wikipedia/commons/thumb/${path}/${width}px-${path.split('/').pop()}`;
+
+export const locationImages = {
+  '79': {
+    url: commonsThumb('c/c4/Ho_Chi_Minh_City_-_DJI_0124-HDR.jpg'),
+    alt: 'TP. Hồ Chí Minh nhìn từ trên cao',
+    author: 'Lê Minh Phát',
+    license: 'CC BY 2.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by/2.0/',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Ho_Chi_Minh_City_-_DJI_0124-HDR.jpg',
+  },
+  // Ảnh banner do chủ dự án cung cấp – không cần ghi nguồn.
+  '01': { url: '/images/banner-hanoi.webp', alt: 'Toàn cảnh đô thị Hà Nội lúc hoàng hôn' },
+  '48': {
+    url: commonsThumb('e/eb/Da_Nang_International_Fireworks_Festival_DIFF_Dragon_Bridge_Han_River_night_skyline_Vietnam.jpg'),
+    alt: 'Cầu Rồng và sông Hàn, Đà Nẵng trong lễ hội pháo hoa',
+    author: 'Vivu Vietnam',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Da_Nang_International_Fireworks_Festival_DIFF_Dragon_Bridge_Han_River_night_skyline_Vietnam.jpg',
+  },
+  '74': {
+    url: commonsThumb('2/29/B%C3%ACnh_D%C6%B0%C6%A1ng_new_city.JPG'),
+    alt: 'Trung tâm hành chính tỉnh tại thành phố mới Bình Dương',
+    author: 'Quannguyen1310',
+    license: 'CC BY-SA 3.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0/',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:B%C3%ACnh_D%C6%B0%C6%A1ng_new_city.JPG',
+  },
+  '75': {
+    url: commonsThumb('4/41/Dong_Nai_River_in_Bien_Hoa_%2815286968737%29.jpg'),
+    alt: 'Sông Đồng Nai tại Biên Hòa',
+    author: 'Gary Todd',
+    license: 'CC0',
+    licenseUrl: 'https://creativecommons.org/publicdomain/zero/1.0/',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Dong_Nai_River_in_Bien_Hoa_(15286968737).jpg',
+  },
+};
+
 export const featuredLocations = [
   { code: '79', name: 'TP. Hồ Chí Minh', large: true },
   { code: '01', name: 'Hà Nội' },
   { code: '48', name: 'Đà Nẵng' },
   { code: '74', name: 'Bình Dương' },
   { code: '75', name: 'Đồng Nai' },
-];
-
-export const utilities = [
-  { title: 'Xem tuổi xây nhà', text: 'Chọn năm phù hợp với tuổi gia chủ', to: '/utilities/xem-tuoi-xay-nha' },
-  { title: 'Tư vấn phong thủy', text: 'Hướng nhà, màu sắc hợp mệnh', to: '/utilities/phong-thuy' },
-  { title: 'Tính lãi vay', text: 'Ước tính số tiền trả góp hằng tháng', to: '/utilities/tinh-lai-vay' },
-  { title: 'Chi phí làm nhà', text: 'Dự toán chi phí xây dựng', to: '/utilities/chi-phi-lam-nha' },
-];
-
-export const samplePartners = ['Đối tác A', 'Đối tác B', 'Đối tác C', 'Đối tác D', 'Đối tác E', 'Đối tác F'];
+].map((location) => ({ ...location, image: locationImages[location.code] }));
 
 export const introBlocks = [
   {
@@ -84,53 +116,13 @@ export const introBlocks = [
     to: '/listings?transactionType=ForRent',
   },
   {
-    title: 'Đánh giá dự án',
-    text: 'Góc nhìn tổng quan về các dự án nổi bật, giúp bạn ra quyết định đúng cho nơi an cư hoặc đầu tư.',
-    to: '/analysis',
+    title: 'Dự án bất động sản',
+    text: 'Thông tin quy mô, tiến độ, giai đoạn mở bán và tin đăng của các dự án nổi bật trên cả nước.',
+    to: '/projects',
   },
   {
     title: 'Wiki BĐS',
     text: 'Kiến thức, kinh nghiệm mua bán, cho thuê, vay mua nhà, pháp lý và phong thủy cho người tìm nhà.',
     to: '/wiki',
-  },
-];
-
-export const quickLinks = [
-  {
-    title: 'Bất động sản bán',
-    links: [
-      ['Bán căn hộ chung cư', '/listings?transactionType=ForSale&propertyType=Apartment'],
-      ['Bán nhà riêng', '/listings?transactionType=ForSale&propertyType=House'],
-      ['Bán biệt thự, liền kề', '/listings?transactionType=ForSale&propertyType=Villa'],
-      ['Bán shophouse', '/listings?transactionType=ForSale&propertyType=Shophouse'],
-      ['Bán đất', '/listings?transactionType=ForSale&propertyType=Land'],
-    ],
-  },
-  {
-    title: 'Bất động sản thuê',
-    links: [
-      ['Thuê căn hộ chung cư', '/listings?transactionType=ForRent&propertyType=RentalApartment'],
-      ['Thuê nhà riêng', '/listings?transactionType=ForRent&propertyType=RentalHouse'],
-      ['Thuê văn phòng', '/listings?transactionType=ForRent&propertyType=Office'],
-      ['Thuê kho, nhà xưởng', '/listings?transactionType=ForRent&propertyType=Warehouse'],
-    ],
-  },
-  {
-    title: 'Bất động sản toàn quốc',
-    links: [
-      ['Mua bán BĐS Hà Nội', '/listings?transactionType=ForSale&provinceCode=01'],
-      ['Cho thuê BĐS Hà Nội', '/listings?transactionType=ForRent&provinceCode=01'],
-      ['Mua bán BĐS Hồ Chí Minh', '/listings?transactionType=ForSale&provinceCode=79'],
-      ['Cho thuê BĐS Hồ Chí Minh', '/listings?transactionType=ForRent&provinceCode=79'],
-    ],
-  },
-  {
-    title: 'Chủ đề nổi bật',
-    links: [
-      ['Tin tức bất động sản', '/news'],
-      ['Quy hoạch - Pháp lý', '/wiki/quy-hoach-phap-ly'],
-      ['Tài chính BĐS', '/wiki/tai-chinh'],
-      ['Biểu đồ giá', '/analysis/bieu-do-gia'],
-    ],
   },
 ];

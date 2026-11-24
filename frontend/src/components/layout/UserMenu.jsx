@@ -3,16 +3,16 @@ import { Link, useLocation } from 'react-router-dom';
 import { accountMenu } from '../../config/navigation';
 import { ChevronDownIcon } from './Icons';
 
-export function Avatar({ name, className = 'h-9 w-9 text-sm' }) {
+export function Avatar({ name, className = 'h-9 w-9 text-sm', tone = 'bg-brand-50 text-brand-600' }) {
   const initial = (name || '?').trim().charAt(0).toUpperCase();
   return (
-    <span className={`grid shrink-0 place-items-center rounded-full bg-brand-50 font-bold text-brand-600 ${className}`}>
+    <span className={`grid shrink-0 place-items-center rounded-full font-bold ${tone} ${className}`}>
       {initial}
     </span>
   );
 }
 
-export default function UserMenu({ user, onLogout }) {
+export default function UserMenu({ user, onLogout, light = false }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   const location = useLocation();
@@ -40,15 +40,19 @@ export default function UserMenu({ user, onLogout }) {
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
         aria-haspopup="menu"
-        className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-[#2c2c2c] hover:bg-slate-50"
+        aria-label={`Tài khoản ${user.fullName}`}
+        className={`flex items-center gap-2 rounded-full p-1 text-sm transition-colors duration-300 xl:px-2 xl:py-1 ${
+          light ? 'text-white hover:bg-white/10' : 'text-[#2c2c2c] hover:bg-slate-50'
+        }`}
       >
-        <Avatar name={user.fullName} />
-        <span className="max-w-[140px] truncate">{user.fullName}</span>
-        <ChevronDownIcon />
+        <Avatar name={user.fullName} tone={light ? 'bg-white/20 text-white ring-1 ring-white/40' : 'bg-brand-50 text-brand-600'} />
+        {/* Màn hình hẹp chỉ hiện ảnh đại diện để tiết kiệm chỗ. */}
+        <span className="hidden max-w-[140px] truncate xl:inline">{user.fullName}</span>
+        <ChevronDownIcon className="hidden h-4 w-4 xl:block" />
       </button>
 
       {open && (
-        <div role="menu" className="absolute right-0 top-full z-50 mt-2 w-64 rounded-lg bg-white py-2 shadow-[0_8px_24px_rgba(0,0,0,0.12)]">
+        <div role="menu" className="absolute right-0 top-full z-50 mt-2 w-64 rounded-2xl border border-slate-100 bg-white py-2 shadow-[0_16px_40px_rgba(40,41,36,0.16)]">
           <div className="border-b border-slate-100 px-4 pb-3 pt-1">
             <p className="truncate text-sm font-semibold text-slate-900">{user.fullName}</p>
             <p className="truncate text-xs text-slate-500">{user.email}</p>

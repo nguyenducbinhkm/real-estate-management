@@ -1,7 +1,7 @@
 import { propertyImageSet } from '../data/propertyImages';
 import { projectImageList } from '../data/projectImages';
 import { newsArticles } from '../data/newsArticles';
-import { heroSlides } from '../data/homeContent';
+import { heroSlides, locationImages } from '../data/homeContent';
 import NewsImage, { ImageCredit } from '../components/news/NewsImage';
 
 function CreditGrid({ title, note, images }) {
@@ -37,6 +37,7 @@ export default function ImageCredits() {
         note="Slide 1 dùng ảnh do BS Realty cung cấp; slide 2 và 3 dùng ảnh dưới đây."
         images={heroSlides.filter((s) => s.imageCredit).map((s) => ({ url: s.image, alt: s.imageAlt, ...s.imageCredit }))}
       />
+      <CreditGrid title="Ảnh tỉnh/thành ở trang chủ" note="Khối “Bất động sản theo địa điểm”." images={Object.values(locationImages).filter((image) => image.author)} />
       <CreditGrid title="Ảnh minh họa tin đăng" note="Chọn theo loại bất động sản: căn hộ, nhà riêng, biệt thự, shophouse, đất, văn phòng, kho xưởng." images={Object.values(propertyImageSet)} />
       <CreditGrid title="Ảnh minh họa dự án" note="Chọn theo tỉnh/thành của dự án." images={projectImageList} />
       <CreditGrid title="Ảnh bài viết tin tức" images={newsArticles.map((article) => article.image)} />

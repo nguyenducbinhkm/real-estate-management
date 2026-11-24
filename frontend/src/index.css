@@ -5,8 +5,9 @@
 @layer base {
   body {
     margin: 0;
-    background: #f8fafc;
-    color: #0f172a;
+    background: #faf8f4;
+    color: #282924;
+    -webkit-font-smoothing: antialiased;
   }
 
   button,
@@ -14,6 +15,16 @@
   select,
   textarea {
     font: inherit;
+  }
+
+  /* Ẩn mũi tên tăng/giảm của ô số để ô hẹp (bộ lọc) vẫn hiện đủ giá trị. */
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type='number'] {
+    -moz-appearance: textfield;
   }
 }
 

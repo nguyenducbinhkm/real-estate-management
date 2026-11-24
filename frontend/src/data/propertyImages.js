@@ -113,6 +113,86 @@ export const propertyImageSet = {
     author: 'Bacthai20', ...CC0,
     sourceUrl: commons('Yen_Binh_Industrial_Park_TS.jpg'),
   },
+
+  /* ---- Ảnh nội thất / nhiều góc cho thư viện ảnh ở trang chi tiết tin ---- */
+  bed1: {
+    url: `${W}/e/e3/Modern_bedroom_design_in_a_stylish_hotel_room_featuring_geometric_patterns_and_soft_linens.jpg/960px-Modern_bedroom_design_in_a_stylish_hotel_room_featuring_geometric_patterns_and_soft_linens.jpg`,
+    alt: 'Phòng ngủ thiết kế hiện đại',
+    author: 'Shixart1985', ...BY('2.0'),
+    sourceUrl: commons('Modern_bedroom_design_in_a_stylish_hotel_room_featuring_geometric_patterns_and_soft_linens.jpg'),
+  },
+  bed2: {
+    url: `${W}/5/5d/Cozy_bedroom_with_two_beds_window_and_wall_art_in_a_simple_setting.jpg/960px-Cozy_bedroom_with_two_beds_window_and_wall_art_in_a_simple_setting.jpg`,
+    alt: 'Phòng ngủ hai giường sáng sủa',
+    author: 'Shixart1985', ...BY('2.0'),
+    sourceUrl: commons('Cozy_bedroom_with_two_beds_window_and_wall_art_in_a_simple_setting.jpg'),
+  },
+  bed3: {
+    url: `${W}/2/29/NY_loft_bedroom_%28Unsplash%29.jpg/960px-NY_loft_bedroom_%28Unsplash%29.jpg`,
+    alt: 'Phòng ngủ kiêm góc làm việc',
+    author: 'Gabriel Beaudry', ...CC0,
+    sourceUrl: commons('NY_loft_bedroom_(Unsplash).jpg'),
+  },
+  bed4: {
+    url: `${W}/2/28/Hotel_bedroom_windows_%28Unsplash%29.jpg/960px-Hotel_bedroom_windows_%28Unsplash%29.jpg`,
+    alt: 'Phòng ngủ có cửa sổ lớn',
+    author: 'Markus Spiske', ...CC0,
+    sourceUrl: commons('Hotel_bedroom_windows_(Unsplash).jpg'),
+  },
+  kitchen1: {
+    url: `${W}/f/f5/Modern_kitchen_and_dining_area_with_stylish_furnishings_and_natural_light_in_a_contemporary_home_setting.jpg/960px-Modern_kitchen_and_dining_area_with_stylish_furnishings_and_natural_light_in_a_contemporary_home_setting.jpg`,
+    alt: 'Bếp và phòng ăn hiện đại',
+    author: 'Shixart1985', ...BY('2.0'),
+    sourceUrl: commons('Modern_kitchen_and_dining_area_with_stylish_furnishings_and_natural_light_in_a_contemporary_home_setting.jpg'),
+  },
+  bath1: {
+    url: `${W}/7/7d/Bathroom_of_Khan_Pool_Suite_in_Amantaka_luxury_Resort_%26_Hotel_in_Luang_Prabang_Laos.jpg/960px-Bathroom_of_Khan_Pool_Suite_in_Amantaka_luxury_Resort_%26_Hotel_in_Luang_Prabang_Laos.jpg`,
+    alt: 'Phòng tắm hai bồn rửa',
+    author: 'Basile Morin', ...BYSA('4.0'),
+    sourceUrl: commons('Bathroom_of_Khan_Pool_Suite_in_Amantaka_luxury_Resort_&_Hotel_in_Luang_Prabang_Laos.jpg'),
+  },
+  bath2: {
+    url: `${W}/1/1a/Red_modern_bathroom_interior._%2851528276166%29.jpg/960px-Red_modern_bathroom_interior._%2851528276166%29.jpg`,
+    alt: 'Phòng tắm hiện đại có vách kính',
+    author: 'Nenad Stojkovic', ...BY('2.0'),
+    sourceUrl: commons('Red_modern_bathroom_interior._(51528276166).jpg'),
+  },
+  officeIn1: {
+    url: `${W}/6/60/Clean_minimalist_office_%28Unsplash%29.jpg/960px-Clean_minimalist_office_%28Unsplash%29.jpg`,
+    alt: 'Không gian làm việc tối giản',
+    author: 'Roman Bozhko', ...CC0,
+    sourceUrl: commons('Clean_minimalist_office_(Unsplash).jpg'),
+  },
+  officeIn2: {
+    url: `${W}/4/46/Office_rest_area_%28Unsplash%29.jpg/960px-Office_rest_area_%28Unsplash%29.jpg`,
+    alt: 'Khu tiếp khách, nghỉ ngơi trong văn phòng',
+    author: 'Breather', ...CC0,
+    sourceUrl: commons('Office_rest_area_(Unsplash).jpg'),
+  },
+  meeting: {
+    url: `${W}/d/da/Chairs_in_a_meeting_room_%28Unsplash%29.jpg/960px-Chairs_in_a_meeting_room_%28Unsplash%29.jpg`,
+    alt: 'Phòng họp',
+    author: 'Breather', ...CC0,
+    sourceUrl: commons('Chairs_in_a_meeting_room_(Unsplash).jpg'),
+  },
+  officeNight: {
+    url: `${W}/c/c1/City_office_lights_%28Unsplash%29.jpg/960px-City_office_lights_%28Unsplash%29.jpg`,
+    alt: 'Tòa văn phòng về đêm',
+    author: 'Vladimir Kudinov', ...CC0,
+    sourceUrl: commons('City_office_lights_(Unsplash).jpg'),
+  },
+  whHall: {
+    url: `${W}/b/bd/ChickletsFactoryNOLAMainHallEmpty2010.JPG/960px-ChickletsFactoryNOLAMainHallEmpty2010.JPG`,
+    alt: 'Bên trong nhà xưởng trống',
+    author: 'Infrogmation of New Orleans', ...BYSA('3.0'),
+    sourceUrl: commons('ChickletsFactoryNOLAMainHallEmpty2010.JPG'),
+  },
+  whDock: {
+    url: `${W}/4/4e/DFC_5396_Night_shift_at_the_loading_bay_delivery_trucks_parked_inside_a_dimly_lit_warehouse_in_Pattaya.jpg/960px-DFC_5396_Night_shift_at_the_loading_bay_delivery_trucks_parked_inside_a_dimly_lit_warehouse_in_Pattaya.jpg`,
+    alt: 'Khu bốc dỡ hàng trong kho',
+    author: 'PattayaPatrol', ...BYSA('4.0'),
+    sourceUrl: commons('DFC_5396_Night_shift_at_the_loading_bay_delivery_trucks_parked_inside_a_dimly_lit_warehouse_in_Pattaya.jpg'),
+  },
 };
 
 const s = propertyImageSet;
@@ -129,9 +209,37 @@ const byType = {
 };
 const fallback = [s.apt1, s.house1, s.villa1];
 
+const seedOf = (listing) => [...String(listing?.id || listing?.title || '')].reduce((sum, ch) => (sum * 31 + ch.charCodeAt(0)) % 9973, 7);
+
 /** Ảnh minh họa cho một tin đăng theo loại BĐS; cùng một tin luôn ra cùng một ảnh. */
 export function getPropertyImage(listing) {
   const list = byType[listing?.propertyType] || fallback;
-  const seed = [...String(listing?.id || listing?.title || '')].reduce((sum, ch) => (sum * 31 + ch.charCodeAt(0)) % 9973, 7);
-  return list[seed % list.length];
+  return list[seedOf(listing) % list.length];
+}
+
+// Thư viện ảnh nhiều góc theo loại BĐS.
+// - coverLabel: nhãn cho ảnh bìa (ảnh trên thẻ tin – chỉ 1 ảnh mặt ngoài, để không lẫn nhiều tòa nhà khác nhau);
+// - angles: các góc còn lại [ảnh, nhãn], chủ yếu là nội thất.
+const gallerySets = {
+  Apartment: { coverLabel: 'Tòa nhà', angles: [[s.room1, 'Phòng khách'], [s.bed1, 'Phòng ngủ'], [s.kitchen1, 'Bếp & phòng ăn'], [s.bath1, 'Phòng tắm'], [s.bed3, 'Phòng ngủ 2']] },
+  RentalApartment: { coverLabel: 'Phòng khách', angles: [[s.room1, 'Phòng khách'], [s.room2, 'Phòng khách'], [s.bed4, 'Phòng ngủ'], [s.kitchen1, 'Bếp & phòng ăn'], [s.bath2, 'Phòng tắm'], [s.bed3, 'Góc làm việc']] },
+  House: { coverLabel: 'Mặt tiền', angles: [[s.room2, 'Phòng khách'], [s.bed2, 'Phòng ngủ'], [s.kitchen1, 'Bếp & phòng ăn'], [s.bath1, 'Phòng tắm']] },
+  RentalHouse: { coverLabel: 'Mặt tiền', angles: [[s.room1, 'Phòng khách'], [s.bed2, 'Phòng ngủ'], [s.kitchen1, 'Bếp & phòng ăn'], [s.bath2, 'Phòng tắm']] },
+  Villa: { coverLabel: 'Mặt tiền', angles: [[s.villa2, 'Hồ bơi'], [s.room1, 'Phòng khách'], [s.bed1, 'Phòng ngủ'], [s.kitchen1, 'Bếp & phòng ăn'], [s.bath1, 'Phòng tắm']] },
+  Shophouse: { coverLabel: 'Mặt tiền', angles: [[s.room2, 'Phòng khách'], [s.bed2, 'Phòng ngủ'], [s.kitchen1, 'Bếp & phòng ăn'], [s.bath2, 'Phòng tắm']] },
+  Land: { coverLabel: 'Toàn cảnh lô đất', angles: [[s.land1, 'Toàn cảnh lô đất'], [s.land2, 'Khu vực xung quanh']] },
+  Office: { coverLabel: 'Tòa nhà', angles: [[s.officeIn1, 'Không gian làm việc'], [s.meeting, 'Phòng họp'], [s.officeIn2, 'Khu tiếp khách']] },
+  Warehouse: { coverLabel: 'Toàn cảnh', angles: [[s.wh1, 'Toàn cảnh'], [s.wh2, 'Toàn cảnh'], [s.whHall, 'Bên trong xưởng'], [s.whDock, 'Khu bốc dỡ hàng']] },
+};
+
+/**
+ * Thư viện ảnh minh họa nhiều góc cho trang chi tiết tin: ảnh đầu tiên trùng ảnh trên thẻ tin,
+ * sau đó là các góc khác cùng loại BĐS (mỗi ảnh kèm `label` mô tả góc chụp). Không phải ảnh thật của căn đó.
+ */
+export function getPropertyGallery(listing) {
+  const cover = getPropertyImage(listing);
+  const set = gallerySets[listing?.propertyType] || { coverLabel: 'Ảnh minh họa', angles: [] };
+  const seen = new Set([cover.url]);
+  const rest = set.angles.filter(([image]) => !seen.has(image.url) && seen.add(image.url));
+  return [{ ...cover, label: set.coverLabel }, ...rest.map(([image, label]) => ({ ...image, label }))];
 }

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { projectService } from '../services/projectService';
-import ProjectCard, { ProjectImageCredits, StatusBadge } from '../components/projects/ProjectCard';
+import ProjectCard, { FeaturedBadge, ProjectImageCredits, StatusBadge } from '../components/projects/ProjectCard';
+import { HoverCorner, ImageShade, zoomImageClass } from '../components/ui/CardImageFx';
 import NewsImage from '../components/news/NewsImage';
 import { getProjectImage } from '../data/projectImages';
 import {
@@ -19,14 +20,17 @@ function FeaturedStrip({ projects }) {
   return (
     <section className="grid gap-5 md:grid-cols-2">
       {projects.map((project) => (
-        <Link key={project.id} to={`/projects/${project.id}`} className="group relative block overflow-hidden rounded-2xl">
-          <NewsImage image={getProjectImage(project)} eager className="h-64 w-full transition-transform duration-500 group-hover:scale-105 md:h-80" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 p-5">
+        <Link key={project.id} to={`/projects/${project.id}`} className="group relative block overflow-hidden rounded-3xl shadow-card transition-shadow hover:shadow-lift">
+          <NewsImage image={getProjectImage(project)} eager className={`h-64 w-full md:h-80 ${zoomImageClass}`} />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink-900/90 via-ink-900/30 to-transparent transition-colors duration-500 group-hover:from-brand-900/90" />
+          <ImageShade />
+          {project.isFeatured && <FeaturedBadge className="absolute right-4 top-4" />}
+          <HoverCorner note="Ảnh minh họa khu vực" />
+          <div className="absolute inset-x-0 bottom-0 p-5 pr-16">
             <StatusBadge status={project.status} />
             <h2 className="mt-3 text-2xl font-extrabold text-white">{project.name}</h2>
             <p className="mt-1 text-sm text-slate-200">{projectLocation(project)}</p>
-            <p className="mt-2 font-bold text-brand-300">{formatPriceRange(project.minPrice, project.maxPrice)}</p>
+            <p className="mt-3 inline-flex rounded-full bg-white/95 px-3 py-1 text-sm font-bold text-brand-700">{formatPriceRange(project.minPrice, project.maxPrice)}</p>
           </div>
         </Link>
       ))}
@@ -34,7 +38,7 @@ function FeaturedStrip({ projects }) {
   );
 }
 
-const selectClass = 'h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm text-ink';
+const selectClass = 'h-11 rounded-full border border-slate-200 bg-slate-50 px-4 text-sm text-ink outline-none focus:border-brand-400 focus:bg-white focus:ring-2 focus:ring-brand-100';
 
 export default function ProjectsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -115,7 +119,7 @@ export default function ProjectsPage() {
             event.preventDefault();
             update({ q: keyword.trim() });
           }}
-          className="grid gap-2 rounded-xl border border-slate-200 bg-slate-50 p-3 md:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))_auto]"
+          className="grid gap-2 rounded-3xl border border-slate-100 bg-white p-3 shadow-card md:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))_auto]"
         >
           <label className="sr-only" htmlFor="project-keyword">Tên dự án hoặc chủ đầu tư</label>
           <input
@@ -162,7 +166,7 @@ export default function ProjectsPage() {
               </div>
               <label className="flex items-center gap-2 text-sm text-slate-600">
                 Sắp xếp
-                <select value={filters.sort} onChange={(e) => update({ sort: e.target.value === 'default' ? '' : e.target.value })} className="h-9 rounded-lg border border-slate-300 bg-white px-2 text-sm text-ink">
+                <select value={filters.sort} onChange={(e) => update({ sort: e.target.value === 'default' ? '' : e.target.value })} className="h-9 rounded-full border border-slate-200 bg-white px-3 text-sm text-ink">
                   {projectSortOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
                 </select>
               </label>
@@ -174,14 +178,14 @@ export default function ProjectsPage() {
 
             <div className="mt-5 space-y-5">
               {result.loading ? (
-                Array.from({ length: 3 }, (_, i) => <div key={i} className="h-52 animate-pulse rounded-xl bg-slate-100" />)
+                Array.from({ length: 3 }, (_, i) => <div key={i} className="h-52 animate-pulse rounded-3xl bg-slate-100" />)
               ) : result.error ? (
-                <div className="rounded-xl border border-red-200 bg-red-50 py-12 text-center">
+                <div className="rounded-3xl border border-red-100 bg-red-50 py-12 text-center">
                   <p className="font-bold text-red-700">{result.error}</p>
-                  <button type="button" onClick={() => setRetry((v) => v + 1)} className="mt-4 h-10 rounded-lg border border-slate-300 bg-white px-4 text-sm font-semibold">Thử lại</button>
+                  <button type="button" onClick={() => setRetry((v) => v + 1)} className="mt-4 h-10 rounded-full border border-slate-200 bg-white px-5 text-sm font-semibold">Thử lại</button>
                 </div>
               ) : result.items.length === 0 ? (
-                <div className="rounded-xl border border-dashed border-slate-300 py-14 text-center">
+                <div className="rounded-3xl border border-dashed border-brand-200 bg-white py-14 text-center">
                   <p className="font-bold text-ink">Không có dự án phù hợp</p>
                   <button type="button" onClick={() => setSearchParams({})} className="mt-3 text-sm font-semibold text-brand-600">Xem tất cả dự án</button>
                 </div>
@@ -199,9 +203,9 @@ export default function ProjectsPage() {
                     aria-current={n === filters.page ? 'page' : undefined}
                     onClick={() => {
                       update({ page: n > 1 ? String(n) : '' });
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
                     }}
-                    className={`h-9 min-w-9 rounded-lg px-2 text-sm font-semibold ${n === filters.page ? 'bg-ink text-white' : 'border border-slate-300 text-ink'}`}
+                    className={`h-9 min-w-9 rounded-full px-3 text-sm font-semibold transition-colors ${n === filters.page ? 'bg-brand-600 text-white shadow-sm shadow-brand-600/30' : 'border border-slate-200 bg-white text-ink hover:border-brand-300'}`}
                   >
                     {n}
                   </button>
@@ -211,7 +215,7 @@ export default function ProjectsPage() {
           </section>
 
           <aside className="space-y-5">
-            <section className="rounded-xl border border-slate-200 p-5">
+            <section className="rounded-3xl border border-slate-100 bg-white p-5 shadow-card">
               <h2 className="mb-3 font-extrabold text-ink">Dự án theo khu vực</h2>
               <ul className="space-y-1.5">
                 {provinces.map((p) => (
@@ -228,7 +232,7 @@ export default function ProjectsPage() {
                 ))}
               </ul>
             </section>
-            <section className="rounded-xl border border-slate-200 p-5">
+            <section className="rounded-3xl border border-slate-100 bg-white p-5 shadow-card">
               <h2 className="mb-3 font-extrabold text-ink">Theo trạng thái</h2>
               <div className="flex flex-wrap gap-2">
                 {statusFilterOptions.filter(([v]) => v).map(([value, label]) => (

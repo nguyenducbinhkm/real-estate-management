@@ -1,14 +1,15 @@
 // Nhãn, màu và định dạng cho trang Dự án. Giá trị trạng thái khớp enum ProjectStatus ở backend.
 
 export const projectStatuses = {
-  Upcoming: { label: 'Sắp mở bán', tone: 'bg-amber-600' },
-  Selling: { label: 'Đang mở bán', tone: 'bg-emerald-600' },
-  HandedOver: { label: 'Đã bàn giao', tone: 'bg-sky-700' },
-  Planning: { label: 'Đang lên kế hoạch', tone: 'bg-slate-600' },
-  PreSales: { label: 'Sắp mở bán', tone: 'bg-amber-600' },
-  UnderConstruction: { label: 'Đang xây dựng', tone: 'bg-orange-600' },
-  Completed: { label: 'Đã hoàn thành', tone: 'bg-sky-700' },
-  Suspended: { label: 'Tạm dừng', tone: 'bg-red-700' },
+  // icon: tên biểu tượng trong components/projects/ProjectIcons.jsx
+  Upcoming: { label: 'Sắp mở bán', tone: 'bg-amber-600', icon: 'clock' },
+  Selling: { label: 'Đang mở bán', tone: 'bg-emerald-600', icon: 'live' },
+  HandedOver: { label: 'Đã bàn giao', tone: 'bg-sky-700', icon: 'key' },
+  Planning: { label: 'Đang lên kế hoạch', tone: 'bg-slate-600', icon: 'plan' },
+  PreSales: { label: 'Sắp mở bán', tone: 'bg-amber-600', icon: 'clock' },
+  UnderConstruction: { label: 'Đang xây dựng', tone: 'bg-orange-600', icon: 'build' },
+  Completed: { label: 'Đã hoàn thành', tone: 'bg-sky-700', icon: 'check' },
+  Suspended: { label: 'Tạm dừng', tone: 'bg-red-700', icon: 'pause' },
 };
 
 // Bộ lọc trạng thái chỉ hiện các giá trị có trong database.

@@ -1,5 +1,7 @@
-// Cấu trúc menu header. propertyType = null nghĩa là backend chưa có loại BĐS tương ứng,
-// link sẽ chỉ lọc theo loại giao dịch.
+// Cấu trúc menu header.
+// Mục con của "Nhà đất bán" / "Nhà đất cho thuê" chỉ gồm các loại BĐS có trong database (enum PropertyType).
+import { wikiCategories } from '../data/wikiArticles';
+import { utilityTools } from './utilities';
 
 function listingLink(transactionType, propertyType) {
   const params = new URLSearchParams({ transactionType });
@@ -9,31 +11,17 @@ function listingLink(transactionType, propertyType) {
 
 const saleItems = [
   ['Bán căn hộ chung cư', 'Apartment'],
-  ['Bán chung cư mini, căn hộ dịch vụ', null],
   ['Bán nhà riêng', 'House'],
   ['Bán nhà biệt thự, liền kề', 'Villa'],
-  ['Bán nhà mặt phố', null],
   ['Bán shophouse, nhà phố thương mại', 'Shophouse'],
-  ['Bán đất nền dự án', 'Land'],
-  ['Bán đất', 'Land'],
-  ['Bán trang trại, khu nghỉ dưỡng', null],
-  ['Bán condotel', null],
-  ['Bán kho, nhà xưởng', null],
-  ['Bán loại bất động sản khác', null],
+  ['Bán đất, đất nền', 'Land'],
 ];
 
 const rentItems = [
   ['Cho thuê căn hộ chung cư', 'RentalApartment'],
-  ['Cho thuê chung cư mini, căn hộ dịch vụ', null],
   ['Cho thuê nhà riêng', 'RentalHouse'],
-  ['Cho thuê nhà biệt thự, liền kề', null],
-  ['Cho thuê nhà mặt phố', null],
-  ['Cho thuê shophouse, nhà phố thương mại', null],
-  ['Cho thuê nhà trọ, phòng trọ', null],
   ['Cho thuê văn phòng', 'Office'],
-  ['Cho thuê, sang nhượng cửa hàng, ki ốt', null],
-  ['Cho thuê kho, nhà xưởng, đất', 'Warehouse'],
-  ['Cho thuê loại bất động sản khác', null],
+  ['Cho thuê kho, nhà xưởng', 'Warehouse'],
 ];
 
 const projectItems = [
@@ -49,23 +37,6 @@ const projectItems = [
   ['Shophouse', 'shophouse'],
   ['Nhà mặt phố', 'nha-mat-pho'],
   ['Dự án khác', 'khac'],
-];
-
-const wikiItems = [
-  ['Mua BĐS', 'mua-bds'],
-  ['Bán BĐS', 'ban-bds'],
-  ['Thuê BĐS', 'thue-bds'],
-  ['Tài chính BĐS', 'tai-chinh'],
-  ['Quy hoạch - Pháp lý', 'quy-hoach-phap-ly'],
-  ['Nội - Ngoại thất', 'noi-ngoai-that'],
-  ['Phong tục', 'phong-tuc'],
-];
-
-const analysisItems = [
-  ['Biểu đồ giá', 'bieu-do-gia'],
-  ['Video đánh giá', 'video-danh-gia'],
-  ['Báo cáo thị trường', 'bao-cao-thi-truong'],
-  ['Góc nhìn chuyên gia', 'goc-nhin-chuyen-gia'],
 ];
 
 export const mainMenu = [
@@ -88,12 +59,12 @@ export const mainMenu = [
   {
     label: 'Wiki BĐS',
     to: '/wiki',
-    children: wikiItems.map(([label, slug]) => ({ label, to: `/wiki/${slug}` })),
+    children: wikiCategories.map((category) => ({ label: category.name, to: `/wiki/${category.slug}` })),
   },
   {
-    label: 'Phân tích đánh giá',
-    to: '/analysis',
-    children: analysisItems.map(([label, slug]) => ({ label, to: `/analysis/${slug}` })),
+    label: 'Tiện ích',
+    to: '/utilities',
+    children: utilityTools.map((tool) => ({ label: tool.title, to: `/utilities/${tool.slug}` })),
   },
 ];
 

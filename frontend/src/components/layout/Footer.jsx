@@ -57,7 +57,7 @@ const branches = [
 function PhoneIcon() {
   return (
     <svg
-      className="h-6 w-6 shrink-0 text-brand-300"
+      className="h-6 w-6 shrink-0 text-gold-300"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -75,7 +75,7 @@ function PhoneIcon() {
 function SupportIcon() {
   return (
     <svg
-      className="h-6 w-6 shrink-0 text-brand-300"
+      className="h-6 w-6 shrink-0 text-gold-300"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -93,7 +93,7 @@ function SupportIcon() {
 function HeadsetIcon() {
   return (
     <svg
-      className="h-6 w-6 shrink-0 text-brand-300"
+      className="h-6 w-6 shrink-0 text-gold-300"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -111,7 +111,7 @@ function HeadsetIcon() {
 function PinIcon() {
   return (
     <svg
-      className="mt-0.5 h-4 w-4 shrink-0 text-brand-300"
+      className="mt-0.5 h-4 w-4 shrink-0 text-gold-300"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -136,7 +136,7 @@ export default function Footer() {
   const [region, setRegion] = useState("Việt Nam");
 
   return (
-    <footer className="mt-auto bg-ink text-sm text-slate-300">
+    <footer className="mt-auto bg-[#282924] text-sm text-slate-300">
       <div className="mx-auto max-w-7xl px-4 pt-10 pb-8">
         {/* Hàng đầu: Logo + 3 cụm liên hệ ngang */}
         <div className="flex flex-col gap-6 border-b border-white/10 pb-8 lg:flex-row lg:items-center lg:justify-between">
@@ -147,10 +147,10 @@ export default function Footer() {
           >
             <img src="/images/logo-mark.png" alt="" className="h-14 w-auto" />
             <span className="leading-tight">
-              <span className="block text-xl font-extrabold tracking-wide text-brand-300">
+              <span className="block text-xl font-extrabold tracking-wide text-gold-300">
                 {site.name.toUpperCase()}
               </span>
-              <span className="block text-[11px] font-semibold uppercase tracking-[0.3em] text-brand-300/80">
+              <span className="block text-[11px] font-semibold uppercase tracking-[0.3em] text-gold-300/80">
                 {site.tagline}
               </span>
             </span>
@@ -161,7 +161,7 @@ export default function Footer() {
               <PhoneIcon />
               <div>
                 <p className="text-xs text-slate-400">Hotline</p>
-                <p className="font-semibold text-brand-300">{site.hotline}</p>
+                <p className="font-semibold text-gold-300">{site.hotline}</p>
               </div>
             </div>
 
@@ -169,7 +169,7 @@ export default function Footer() {
               <SupportIcon />
               <div>
                 <p className="text-xs text-slate-400">Hỗ trợ khách hàng</p>
-                <p className="font-semibold text-brand-300">
+                <p className="font-semibold text-gold-300">
                   {site.supportEmail}
                 </p>
               </div>
@@ -179,7 +179,7 @@ export default function Footer() {
               <HeadsetIcon />
               <div>
                 <p className="text-xs text-slate-400">Chăm sóc khách hàng</p>
-                <p className="font-semibold text-brand-300">
+                <p className="font-semibold text-gold-300">
                   {site.careEmail || site.supportEmail}
                 </p>
               </div>
@@ -199,7 +199,7 @@ export default function Footer() {
                 <span>{site.address}</span>
               </li>
               <li className="flex items-center gap-2.5">
-                <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center text-brand-300">
+                <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center text-gold-300">
                   ☎
                 </span>
                 <span>{site.phone}</span>
@@ -209,9 +209,9 @@ export default function Footer() {
             <div className="mt-5 flex flex-wrap items-center gap-3">
               <a
                 href="#google-play"
-                className="inline-flex items-center gap-2.5 rounded-lg border border-white/15 bg-white/5 px-3.5 py-2 text-left transition hover:border-brand-300/60 hover:bg-white/10"
+                className="inline-flex items-center gap-2.5 rounded-lg border border-white/15 bg-white/5 px-3.5 py-2 text-left transition hover:border-gold-300/60 hover:bg-white/10"
               >
-                <span className="text-base leading-none text-brand-300">▶</span>
+                <span className="text-base leading-none text-gold-300">▶</span>
                 <span className="leading-tight">
                   <span className="block text-[10px] text-slate-400">
                     Tải ứng dụng trên
@@ -224,7 +224,7 @@ export default function Footer() {
 
               <a
                 href="#app-store"
-                className="inline-flex items-center gap-2.5 rounded-lg border border-white/15 bg-white/5 px-3.5 py-2 text-left transition hover:border-brand-300/60 hover:bg-white/10"
+                className="inline-flex items-center gap-2.5 rounded-lg border border-white/15 bg-white/5 px-3.5 py-2 text-left transition hover:border-gold-300/60 hover:bg-white/10"
               >
                 <span className="text-base leading-none text-white"></span>
                 <span className="leading-tight">
@@ -249,7 +249,7 @@ export default function Footer() {
                   <li key={label}>
                     <Link
                       to={to}
-                      className="text-slate-400 transition-colors hover:text-brand-300"
+                      className="text-slate-400 transition-colors hover:text-gold-300"
                     >
                       {label}
                     </Link>
@@ -268,7 +268,7 @@ export default function Footer() {
                 <li key={label}>
                   <Link
                     to={to}
-                    className="text-slate-400 transition-colors hover:text-brand-300"
+                    className="text-slate-400 transition-colors hover:text-gold-300"
                   >
                     {label}
                   </Link>
@@ -287,12 +287,12 @@ export default function Footer() {
                 id="footer-region"
                 value={region}
                 onChange={(e) => setRegion(e.target.value)}
-                className="mt-2 h-9 w-full rounded-lg border border-white/15 bg-white/5 px-3 text-xs font-medium text-white outline-none focus:border-brand-300"
+                className="mt-2 h-9 w-full rounded-lg border border-white/15 bg-white/5 px-3 text-xs font-medium text-white outline-none focus:border-gold-300"
               >
-                <option value="Việt Nam" className="bg-ink text-white">
+                <option value="Việt Nam" className="bg-[#282924] text-white">
                   🌐 Việt Nam
                 </option>
-                <option value="English" className="bg-ink text-white">
+                <option value="English" className="bg-[#282924] text-white">
                   🌐 English
                 </option>
               </select>
@@ -305,7 +305,7 @@ export default function Footer() {
           <button
             type="button"
             onClick={() => setShowBranches((prev) => !prev)}
-            className="inline-flex items-center gap-2 text-xs font-medium text-slate-300 transition-colors hover:text-brand-300"
+            className="inline-flex items-center gap-2 text-xs font-medium text-slate-300 transition-colors hover:text-gold-300"
           >
             <span
               className={`transition-transform ${showBranches ? "rotate-180" : ""}`}
@@ -319,7 +319,7 @@ export default function Footer() {
             <div className="mt-4 grid gap-6 rounded-xl border border-white/10 bg-white/5 p-5 sm:grid-cols-3">
               {branches.map((branch) => (
                 <div key={branch.name} className="space-y-1 text-xs">
-                  <p className="font-semibold text-brand-300">{branch.name}</p>
+                  <p className="font-semibold text-gold-300">{branch.name}</p>
                   <p className="text-slate-300">{branch.address}</p>
                   <p className="text-slate-400">{branch.phone}</p>
                 </div>
@@ -347,21 +347,21 @@ export default function Footer() {
             <a
               href="#facebook"
               aria-label="Facebook"
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/5 text-xs font-bold transition hover:border-brand-300 hover:text-brand-300"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/5 text-xs font-bold transition hover:border-gold-300 hover:text-gold-300"
             >
               f
             </a>
             <a
               href="#youtube"
               aria-label="YouTube"
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/5 text-xs font-bold transition hover:border-brand-300 hover:text-brand-300"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/5 text-xs font-bold transition hover:border-gold-300 hover:text-gold-300"
             >
               ▶
             </a>
             <a
               href="#zalo"
               aria-label="Zalo"
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/5 text-[10px] font-bold transition hover:border-brand-300 hover:text-brand-300"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/5 text-[10px] font-bold transition hover:border-gold-300 hover:text-gold-300"
             >
               Zalo
             </a>
