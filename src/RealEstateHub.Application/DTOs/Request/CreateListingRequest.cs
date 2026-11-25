@@ -28,4 +28,7 @@ public class CreateListingRequest
     public bool? PetsAllowed { get; set; }
     public double? CeilingHeight { get; set; }
     public double? RoadWidth { get; set; }
+
+    /// <summary>Đường dẫn ảnh theo thứ tự hiển thị (ảnh đầu là ảnh đại diện), lấy từ POST /api/uploads/images.</summary>
+    public List<string>? ImageUrls { get; set; }
 }

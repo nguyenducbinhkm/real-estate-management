@@ -15,4 +15,19 @@ public class LocationRepository : ILocationRepository
         => _db.Wards
             .Include(w => w.District).ThenInclude(d => d.Province)
             .FirstOrDefaultAsync(w => w.Code == wardCode, ct);
+
+    public async Task<IReadOnlyList<Province>> GetProvincesAsync(CancellationToken ct = default)
+        => await _db.Provinces.AsNoTracking().OrderBy(p => p.Name).ToListAsync(ct);
+
+    public async Task<IReadOnlyList<District>> GetDistrictsAsync(string provinceCode, CancellationToken ct = default)
+        => await _db.Districts.AsNoTracking()
+            .Where(d => d.Province.Code == provinceCode)
+            .OrderBy(d => d.Name)
+            .ToListAsync(ct);
+
+    public async Task<IReadOnlyList<Ward>> GetWardsAsync(string districtCode, CancellationToken ct = default)
+        => await _db.Wards.AsNoTracking()
+            .Where(w => w.District.Code == districtCode)
+            .OrderBy(w => w.Name)
+            .ToListAsync(ct);
 }

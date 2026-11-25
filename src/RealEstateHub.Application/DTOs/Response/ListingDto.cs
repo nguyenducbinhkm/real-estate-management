@@ -24,4 +24,17 @@ public class ListingDto
     public string WardName { get; set; } = string.Empty;
     public string StreetAddress { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    public DateTime? ExpiresAt { get; set; }
+
+    // Thông tin chi tiết theo loại BĐS (chỉ những trường có cột trong database).
+    public int? Bedrooms { get; set; }
+    public int? Bathrooms { get; set; }
+    public int? Floors { get; set; }
+    public LegalStatus? LegalStatus { get; set; }
+    public FurnitureStatus? Furniture { get; set; }
+
+    public List<ListingImageDto> Images { get; set; } = new();
 }
+
+public record ListingImageDto(Guid Id, string Url, string? Caption, int SortOrder);

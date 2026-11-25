@@ -33,6 +33,7 @@ public class AppDbContext : DbContext
     public DbSet<Project> Projects => Set<Project>();
     public DbSet<ProjectPhase> ProjectPhases => Set<ProjectPhase>();
     public DbSet<SavedListing> SavedListings => Set<SavedListing>();
+    public DbSet<ContactRequest> ContactRequests => Set<ContactRequest>();
     public DbSet<SearchAlert> SearchAlerts => Set<SearchAlert>();
     public DbSet<ListingReport> ListingReports => Set<ListingReport>();
     public DbSet<PropertyImage> PropertyImages => Set<PropertyImage>();

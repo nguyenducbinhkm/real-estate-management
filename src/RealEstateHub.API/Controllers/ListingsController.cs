@@ -65,6 +65,16 @@ public class ListingsController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>Chủ tin đổi trạng thái: hiện (Active), ẩn (Draft), đã bán (Sold), đã cho thuê (Rented).</summary>
+    [HttpPatch("{id:guid}/status")]
+    [Authorize]
+    public async Task<IActionResult> ChangeStatus(Guid id, [FromBody] ChangeListingStatusRequest request,
+        [FromServices] IValidator<ChangeListingStatusRequest> validator, CancellationToken ct)
+    {
+        await validator.ValidateAndThrowAsync(request, ct);
+        return Ok(await _listings.ChangeStatusAsync(id, GetUserId(), IsAdmin(), request, ct));
+    }
+
     [HttpGet("my")]
     [Authorize]
     public async Task<IActionResult> GetMine(CancellationToken ct)

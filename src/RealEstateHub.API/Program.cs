@@ -13,6 +13,8 @@ using RealEstateHub.Application.Validators;
 using RealEstateHub.Infrastructure.Data;
 using RealEstateHub.Infrastructure.Repositories;
 using RealEstateHub.Infrastructure.Services;
+using RealEstateHub.Infrastructure.Storage;
+using Microsoft.Extensions.FileProviders;
 using RealEstateHub.Application.Patterns.Factory;
 using RealEstateHub.Application.Patterns.Strategy;
 using RealEstateHub.Application.Patterns.Composite;
@@ -71,6 +73,17 @@ builder.Services.AddScoped<IListingService, ListingService>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IContactRequestRepository, ContactRequestRepository>();
+builder.Services.AddScoped<IContactRequestService, ContactRequestService>();
+builder.Services.AddScoped<ISellerService, SellerService>();
+builder.Services.AddScoped<IListingModerationService, ListingModerationService>();
+builder.Services.AddScoped<IImageUploadService, ImageUploadService>();
+
+// Ảnh tin đăng lưu trong wwwroot/uploads/listings của API và được phục vụ dạng file tĩnh.
+var webRoot = Path.Combine(builder.Environment.ContentRootPath, "wwwroot");
+Directory.CreateDirectory(Path.Combine(webRoot, "uploads", "listings"));
+builder.Services.AddSingleton<IImageStorage>(new LocalImageStorage(webRoot));
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IPropertyFactory, PropertyFactory>();
@@ -127,6 +140,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(webRoot),
+    OnPrepareResponse = ctx => ctx.Context.Response.Headers["X-Content-Type-Options"] = "nosniff"
+});
 
 app.UseCors(FrontendCorsPolicy);
 app.UseAuthentication();

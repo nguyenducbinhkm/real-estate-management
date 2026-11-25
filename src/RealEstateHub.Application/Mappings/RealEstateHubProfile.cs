@@ -53,6 +53,32 @@ public class RealEstateHubProfile : Profile
         WardCode = p.Address.WardCode,
         WardName = p.Address.WardName,
         StreetAddress = p.Address.StreetAddress,
-        CreatedAt = p.CreatedAt
+        CreatedAt = p.CreatedAt,
+        UpdatedAt = p.UpdatedAt,
+        ExpiresAt = p.ExpiresAt,
+        Bedrooms = p switch
+        {
+            Apartment a => a.BedroomCount, Villa v => v.BedroomCount,
+            RentalApartment ra => ra.BedroomCount, RentalHouse rh => rh.BedroomCount, _ => null
+        },
+        Bathrooms = p switch
+        {
+            Apartment a => a.BathroomCount, Villa v => v.BathroomCount,
+            RentalApartment ra => ra.BathroomCount, RentalHouse rh => rh.BathroomCount, _ => null
+        },
+        Floors = p switch
+        {
+            Apartment a => a.FloorNumber, RentalApartment ra => ra.FloorNumber, Office o => o.FloorNumber, _ => null
+        },
+        LegalStatus = p switch { ForSaleProperty s => s.LegalStatus, Land l => l.LegalStatus, _ => null },
+        Furniture = p switch
+        {
+            ForSaleProperty s => s.Furniture, RentalApartment ra => ra.Furniture,
+            RentalHouse rh => rh.Furniture, Office o => o.Furniture, _ => null
+        },
+        Images = p.Images
+            .OrderBy(i => i.SortOrder)
+            .Select(i => new ListingImageDto(i.Id, i.Url, i.Caption, i.SortOrder))
+            .ToList()
     };
 }

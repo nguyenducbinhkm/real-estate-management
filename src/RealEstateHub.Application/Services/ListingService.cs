@@ -61,15 +61,22 @@ public class ListingService : IListingService
             ?? throw new UnauthorizedException("User not found.");
 
         if (!owner.CanPostListing())
-            throw new ForbiddenException("Buyer accounts cannot post listings.");
+            throw new ForbiddenException("Tài khoản người mua không thể đăng tin.");
+
+        var maxListings = owner.GetMaxListings();
+        var used = (await _listings.GetByOwnerAsync(ownerId, ct)).Count(p => p.CountsTowardListingLimit);
+        if (used >= maxListings)
+            throw new AppException(422, "LISTING_LIMIT",
+                $"Bạn đã dùng hết {maxListings} suất đăng tin. Hãy ẩn hoặc xoá bớt tin, hoặc đánh dấu tin đã giao dịch.");
 
         var ward = await ResolveWardAsync(request, ct);
         var listing = _propertyFactory.Create(request, owner);
         listing.WardId = ward.Id;
         listing.Ward = ward;
         if (!listing.Validate())
-            throw new AppException(422, "VALIDATION_ERROR", "Listing data is invalid.");
+            throw new AppException(422, "VALIDATION_ERROR", "Dữ liệu tin đăng không hợp lệ.");
 
+        ApplyImages(listing, request.ImageUrls ?? new List<string>());
         listing.Status = PropertyStatus.Pending;
         await _listings.AddAsync(listing, ct);
         return RealEstateHubProfile.MapListing(listing);
@@ -81,16 +88,26 @@ public class ListingService : IListingService
             ?? throw new NotFoundException("Listing not found.");
 
         if (!isAdmin && listing.OwnerId != requesterId)
-            throw new ForbiddenException("You can only update your own listing.");
+            throw new ForbiddenException("Bạn chỉ sửa được tin của mình.");
+
+        var now = DateTime.UtcNow;
+        if (!isAdmin)
+        {
+            // Sửa nội dung thì tin phải được duyệt lại.
+            try { listing.MarkEditedByOwner(now); }
+            catch (InvalidOperationException ex) { throw new AppException(422, "INVALID_STATUS", ex.Message); }
+        }
 
         var ward = await ResolveWardAsync(request, ct);
         ApplyListing(request, listing);
         listing.WardId = ward.Id;
         listing.Ward = ward;
         if (!listing.Validate())
-            throw new AppException(422, "VALIDATION_ERROR", "Listing data is invalid.");
+            throw new AppException(422, "VALIDATION_ERROR", "Dữ liệu tin đăng không hợp lệ.");
 
-        listing.UpdatedAt = DateTime.UtcNow;
+        if (request.ImageUrls is not null)
+            ApplyImages(listing, request.ImageUrls);
+        listing.UpdatedAt = now;
         await _listings.UpdateAsync(listing, ct);
         return RealEstateHubProfile.MapListing(listing);
     }
@@ -104,6 +121,27 @@ public class ListingService : IListingService
             throw new ForbiddenException("You can only delete your own listing.");
 
         await _listings.DeleteAsync(listing, ct);
+    }
+
+    public async Task<ListingDto> ChangeStatusAsync(Guid id, Guid requesterId, bool isAdmin, ChangeListingStatusRequest request, CancellationToken ct = default)
+    {
+        var listing = await _listings.GetByIdAsync(id, ct)
+            ?? throw new NotFoundException("Listing not found.");
+
+        if (!isAdmin && listing.OwnerId != requesterId)
+            throw new ForbiddenException("You can only update your own listing.");
+
+        try
+        {
+            listing.ChangeStatusByOwner(request.Status, DateTime.UtcNow);
+        }
+        catch (InvalidOperationException ex)
+        {
+            throw new AppException(422, "INVALID_STATUS", ex.Message);
+        }
+
+        await _listings.UpdateAsync(listing, ct);
+        return RealEstateHubProfile.MapListing(listing);
     }
 
     public async Task<IReadOnlyCollection<ListingDto>> GetMineAsync(Guid ownerId, CancellationToken ct = default)
@@ -124,6 +162,12 @@ public class ListingService : IListingService
             throw new AppException(422, "VALIDATION_ERROR", "Ward does not belong to the given province.");
 
         return ward;
+    }
+
+    private static void ApplyImages(Property listing, IEnumerable<string> urls)
+    {
+        try { listing.ReplaceImages(urls); }
+        catch (InvalidOperationException ex) { throw new AppException(422, "VALIDATION_ERROR", ex.Message); }
     }
 
     private static void ApplyListing(CreateListingRequest r, Property listing)
@@ -172,6 +216,30 @@ public class ListingService : IListingService
             rentalHouse.LandArea = r.LandArea ?? 0;
         }
         else if (listing is Office office)
+        {
             office.FloorNumber = r.FloorNumber ?? 0;
+            office.Furniture = r.Furniture ?? FurnitureStatus.None;
+        }
+        else if (listing is Warehouse warehouse)
+        {
+            warehouse.CeilingHeight = r.CeilingHeight ?? 0;
+            warehouse.RoadWidth = r.RoadWidth ?? 0;
+        }
+        else if (listing is Land land)
+        {
+            land.HasClearance = r.HasClearance ?? false;
+            land.LegalStatus = r.LegalStatus ?? LegalStatus.Unknown;
+        }
+
+        if (listing is RentalApartment ra)
+        {
+            ra.Furniture = r.Furniture ?? FurnitureStatus.None;
+            ra.PetsAllowed = r.PetsAllowed ?? false;
+        }
+        else if (listing is RentalHouse rh)
+            rh.Furniture = r.Furniture ?? FurnitureStatus.None;
+
+        if (listing is ForRentProperty rent)
+            rent.RentalPeriodMonths = r.RentalPeriodMonths ?? 12;
     }
 }

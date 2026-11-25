@@ -1,3 +1,4 @@
+using RealEstateHub.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using RealEstateHub.Application.DTOs.Request;
 using RealEstateHub.Application.Interfaces;
@@ -47,7 +48,8 @@ public class ListingRepository : IListingRepository
         SearchCriteria criteria,
         CancellationToken ct = default)
     {
-        var source = _db.Properties.AsNoTracking().AsQueryable();
+        // Trang công khai không hiện tin chưa duyệt, bị từ chối hoặc chủ tin đã ẩn.
+        var source = PubliclyVisible(_db.Properties.AsNoTracking());
         source = _searchEngine.Clear()
             .AddStrategy(_composite)
             .Search(source, criteria);
@@ -83,7 +85,7 @@ public class ListingRepository : IListingRepository
     public async Task<(IReadOnlyCollection<Property> Items, int Total)> GetByProjectAsync(
         Guid projectId, int page, int pageSize, CancellationToken ct = default)
     {
-        var source = _db.Properties.AsNoTracking().Where(p => p.ProjectId == projectId);
+        var source = PubliclyVisible(_db.Properties.AsNoTracking()).Where(p => p.ProjectId == projectId);
         var total = await source.CountAsync(ct);
         var items = await WithLocation(source)
             .OrderByDescending(p => p.IsFeatured)
@@ -96,12 +98,37 @@ public class ListingRepository : IListingRepository
         return (items, total);
     }
 
+    private static IQueryable<Property> PubliclyVisible(IQueryable<Property> query)
+        => query.Where(p => p.Status != PropertyStatus.Pending
+                            && p.Status != PropertyStatus.Rejected
+                            && p.Status != PropertyStatus.Draft);
+
+    public async Task<IReadOnlyCollection<Property>> GetForModerationAsync(PropertyStatus? status, CancellationToken ct = default)
+    {
+        var query = WithLocation(_db.Properties.AsNoTracking()).Include(p => p.Owner).Include(p => p.Images).AsSplitQuery();
+        if (status.HasValue) query = query.Where(p => p.Status == status.Value);
+        return await query.OrderByDescending(p => p.UpdatedAt).ThenByDescending(p => p.CreatedAt).ToListAsync(ct);
+    }
+
+    public async Task<IReadOnlyDictionary<PropertyStatus, int>> CountByStatusAsync(CancellationToken ct = default)
+        => await _db.Properties.AsNoTracking()
+            .GroupBy(p => p.Status)
+            .Select(g => new { g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.Key, x => x.Count, ct);
+
     public async Task<Property> AddAsync(Property listing, CancellationToken ct = default)
     {
         await _db.Properties.AddAsync(listing, ct);
         await _db.SaveChangesAsync(ct);
         return listing;
     }
+
+    public async Task<IReadOnlyDictionary<Guid, int>> GetSaveCountsAsync(Guid ownerId, CancellationToken ct = default)
+        => await _db.SavedListings.AsNoTracking()
+            .Where(s => s.Property.OwnerId == ownerId)
+            .GroupBy(s => s.PropertyId)
+            .Select(g => new { PropertyId = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.PropertyId, x => x.Count, ct);
 
     public async Task UpdateAsync(Property listing, CancellationToken ct = default)
     {

@@ -82,6 +82,9 @@ public class PropertyFactory : IPropertyFactory
             sale.Furniture = request.Furniture ?? FurnitureStatus.None;
         }
 
+        if (property is Land land)
+            land.LegalStatus = request.LegalStatus ?? LegalStatus.Unknown;
+
         if (property is RentalApartment rentalApartment)
         {
             rentalApartment.Furniture = request.Furniture ?? FurnitureStatus.None;

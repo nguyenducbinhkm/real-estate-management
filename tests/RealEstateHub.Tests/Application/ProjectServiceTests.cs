@@ -123,8 +123,11 @@ public class ProjectServiceTests
         public Task<(IReadOnlyCollection<Property> Items, int Total)> SearchAsync(SearchCriteria criteria, CancellationToken ct = default) => throw new NotImplementedException();
         public Task<Property?> GetByIdAsync(Guid id, CancellationToken ct = default) => throw new NotImplementedException();
         public Task<IReadOnlyCollection<Property>> GetByOwnerAsync(Guid ownerId, CancellationToken ct = default) => throw new NotImplementedException();
+        public Task<IReadOnlyDictionary<Guid, int>> GetSaveCountsAsync(Guid ownerId, CancellationToken ct = default) => throw new NotImplementedException();
         public Task<(IReadOnlyCollection<Property> Items, int Total)> GetByProjectAsync(Guid projectId, int page, int pageSize, CancellationToken ct = default)
             => Task.FromResult<(IReadOnlyCollection<Property>, int)>((Array.Empty<Property>(), 0));
+        public Task<IReadOnlyCollection<Property>> GetForModerationAsync(PropertyStatus? status, CancellationToken ct = default) => throw new NotImplementedException();
+        public Task<IReadOnlyDictionary<PropertyStatus, int>> CountByStatusAsync(CancellationToken ct = default) => throw new NotImplementedException();
         public Task<Property> AddAsync(Property listing, CancellationToken ct = default) => throw new NotImplementedException();
         public Task UpdateAsync(Property listing, CancellationToken ct = default) => throw new NotImplementedException();
         public Task DeleteAsync(Property listing, CancellationToken ct = default) => throw new NotImplementedException();

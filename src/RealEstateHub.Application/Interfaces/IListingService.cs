@@ -11,4 +11,5 @@ public interface IListingService
     Task<ListingDto> UpdateAsync(Guid id, Guid requesterId, bool isAdmin, UpdateListingRequest request, CancellationToken ct = default);
     Task DeleteAsync(Guid id, Guid requesterId, bool isAdmin, CancellationToken ct = default);
     Task<IReadOnlyCollection<ListingDto>> GetMineAsync(Guid ownerId, CancellationToken ct = default);
+    Task<ListingDto> ChangeStatusAsync(Guid id, Guid requesterId, bool isAdmin, ChangeListingStatusRequest request, CancellationToken ct = default);
 }

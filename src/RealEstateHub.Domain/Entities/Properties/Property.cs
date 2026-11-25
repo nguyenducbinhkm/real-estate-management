@@ -44,4 +44,100 @@ public abstract class Property
 
     public virtual string GetSummary()
         => $"{Title} - {Price:N0} VNĐ - {Area}m²";
+
+    /// <summary>Thời gian hiển thị một tin sau khi được duyệt.</summary>
+    public const int ListingDurationDays = 30;
+
+    /// <summary>Số ảnh tối đa của một tin.</summary>
+    public const int MaxImages = 10;
+
+    /// <summary>Tin chiếm "suất" đăng của chủ tin (chưa giao dịch, chưa hết hạn, không bị từ chối).</summary>
+    public bool CountsTowardListingLimit
+        => Status is PropertyStatus.Pending or PropertyStatus.Active or PropertyStatus.Draft;
+
+    /// <summary>Admin duyệt tin đang chờ: chuyển sang Đang hiển thị và tính lại hạn hiển thị.</summary>
+    public void Approve(DateTime nowUtc)
+    {
+        if (Status != PropertyStatus.Pending)
+            throw new InvalidOperationException("Chỉ duyệt được tin đang chờ duyệt.");
+        Status = PropertyStatus.Active;
+        ExpiresAt = nowUtc.AddDays(ListingDurationDays);
+        UpdatedAt = nowUtc;
+    }
+
+    /// <summary>Admin từ chối tin đang chờ duyệt.</summary>
+    public void Reject(DateTime nowUtc)
+    {
+        if (Status != PropertyStatus.Pending)
+            throw new InvalidOperationException("Chỉ từ chối được tin đang chờ duyệt.");
+        Status = PropertyStatus.Rejected;
+        UpdatedAt = nowUtc;
+    }
+
+    /// <summary>
+    /// Chủ tin sửa nội dung: tin phải được duyệt lại (về Chờ duyệt), kể cả tin bị từ chối hoặc hết hạn – đây cũng là cách đăng lại.
+    /// Tin đã bán / đã cho thuê không sửa được.
+    /// </summary>
+    public void MarkEditedByOwner(DateTime nowUtc)
+    {
+        if (Status is PropertyStatus.Sold or PropertyStatus.Rented)
+            throw new InvalidOperationException("Tin đã giao dịch, không thể sửa nội dung.");
+        Status = PropertyStatus.Pending;
+        UpdatedAt = nowUtc;
+    }
+
+    /// <summary>Thay toàn bộ ảnh theo thứ tự; ảnh đầu tiên là ảnh đại diện.</summary>
+    public void ReplaceImages(IEnumerable<string> urls)
+    {
+        var list = urls.Where(u => !string.IsNullOrWhiteSpace(u)).Select(u => u.Trim()).Distinct().ToList();
+        if (list.Count > MaxImages)
+            throw new InvalidOperationException($"Một tin chỉ được tối đa {MaxImages} ảnh.");
+        Images.Clear();
+        for (var i = 0; i < list.Count; i++)
+            Images.Add(new PropertyImage { PropertyId = Id, Url = list[i], SortOrder = i, IsPrimary = i == 0 });
+    }
+
+    /// <summary>Tin đã qua ngày hết hạn (ExpiresAt) hoặc mang trạng thái Expired.</summary>
+    public bool IsExpired(DateTime nowUtc)
+        => Status == PropertyStatus.Expired || (ExpiresAt.HasValue && ExpiresAt.Value <= nowUtc);
+
+    /// <summary>
+    /// Chủ tin tự đổi trạng thái: Active (hiện), Draft (ẩn), Sold (đã bán – chỉ tin bán), Rented (đã cho thuê – chỉ tin cho thuê).
+    /// Không tự duyệt tin đang chờ duyệt, không mở lại tin bị từ chối hoặc đã hết hạn.
+    /// Ném InvalidOperationException (thông báo tiếng Việt) khi không hợp lệ.
+    /// </summary>
+    public void ChangeStatusByOwner(PropertyStatus target, DateTime nowUtc)
+    {
+        if (target == Status) return;
+
+        switch (target)
+        {
+            case PropertyStatus.Draft:
+                // Chỉ tin đã được duyệt mới được ẩn; nếu không, Pending -> Draft -> Active sẽ vượt qua bước duyệt.
+                if (Status is not (PropertyStatus.Active or PropertyStatus.Sold or PropertyStatus.Rented))
+                    throw new InvalidOperationException("Chỉ ẩn được tin đã được duyệt.");
+                break;
+            case PropertyStatus.Sold when TransactionType != TransactionType.ForSale:
+                throw new InvalidOperationException("Chỉ tin bán mới đánh dấu được \"Đã bán\".");
+            case PropertyStatus.Rented when TransactionType != TransactionType.ForRent:
+                throw new InvalidOperationException("Chỉ tin cho thuê mới đánh dấu được \"Đã cho thuê\".");
+            case PropertyStatus.Sold or PropertyStatus.Rented:
+                if (Status is PropertyStatus.Pending or PropertyStatus.Rejected)
+                    throw new InvalidOperationException("Tin chưa được duyệt nên chưa thể đánh dấu đã giao dịch.");
+                break;
+            case PropertyStatus.Active:
+                if (Status == PropertyStatus.Pending)
+                    throw new InvalidOperationException("Tin đang chờ duyệt, chưa thể tự hiển thị.");
+                if (Status == PropertyStatus.Rejected)
+                    throw new InvalidOperationException("Tin đã bị từ chối, hãy sửa nội dung và đăng lại.");
+                if (IsExpired(nowUtc))
+                    throw new InvalidOperationException("Tin đã hết hạn, không thể hiển thị lại.");
+                break;
+            default:
+                throw new InvalidOperationException("Trạng thái không hợp lệ. Chỉ được hiện, ẩn hoặc đánh dấu đã giao dịch.");
+        }
+
+        Status = target;
+        UpdatedAt = nowUtc;
+    }
 }
