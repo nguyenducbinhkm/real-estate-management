@@ -3,20 +3,20 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { adminService } from '../services/postingService';
 import { readApiError } from '../services/accountService';
-import { mediaUrl } from '../services/api';
-import { getPropertyImage } from '../data/propertyImages';
+import { getPropertyImage, getUploadedImages } from '../data/propertyImages';
 import { TYPE_LABELS } from '../utils/searchParser';
 import NewsImage from '../components/news/NewsImage';
 import Modal from '../components/ui/Modal';
 import Spinner from '../components/ui/Spinner';
-import SellerShell, { formatPrice, Icon, icons, listingStatusInfo, StatusPill, timeAgo } from '../components/seller/SellerShell';
+import { formatPrice, Icon, icons, listingStatusInfo, StatusPill, timeAgo } from '../components/seller/SellerShell';
+import AdminShell from '../components/admin/AdminShell';
 
 /* Trang "Duyệt tin đăng" (/admin/listings) – chỉ Admin: GET /api/admin/listings, PATCH .../approve | .../reject. */
 
 const TABS = ['Pending', 'Active', 'Rejected', 'Draft', 'Sold', 'Rented', 'Expired'];
 const ROLE_LABELS = { Seller: 'Người bán', Agent: 'Môi giới', Admin: 'Quản trị', Buyer: 'Người mua' };
 
-function ModerationRow({ item, busy, onApprove, onReject, onOpen }) {
+function ModerationRow({ item, busy, onApprove, onReject, onTakeDown, onOpen }) {
   const { listing } = item;
   const location = [listing.wardName, listing.districtName, listing.provinceName].filter(Boolean).join(', ');
   const isRent = listing.transactionType === 'ForRent';
@@ -25,7 +25,7 @@ function ModerationRow({ item, busy, onApprove, onReject, onOpen }) {
       <button type="button" onClick={() => onOpen(item)} className="group relative h-40 shrink-0 overflow-hidden rounded-2xl sm:h-auto sm:w-52">
         <NewsImage image={getPropertyImage(listing)} className="h-full min-h-[8rem] w-full transition-transform duration-500 group-hover:scale-105" />
         <span className="absolute left-2 top-2"><StatusPill info={listingStatusInfo[listing.status]} /></span>
-        {listing.images?.length > 0 && <span className="absolute bottom-2 right-2 rounded-full bg-black/50 px-2 py-0.5 text-[11px] text-white">{listing.images.length} ảnh</span>}
+        {getUploadedImages(listing).length > 0 && <span className="absolute bottom-2 right-2 rounded-full bg-black/50 px-2 py-0.5 text-[11px] text-white">{getUploadedImages(listing).length} ảnh</span>}
       </button>
       <div className="flex min-w-0 flex-1 flex-col gap-2 py-1 pr-1">
         <div className="flex flex-wrap items-start justify-between gap-2">
@@ -43,6 +43,11 @@ function ModerationRow({ item, busy, onApprove, onReject, onOpen }) {
           <button type="button" onClick={() => onOpen(item)} className="inline-flex h-9 items-center gap-1.5 rounded-full border border-slate-200 px-3 text-xs font-semibold text-ink hover:border-brand-300">
             <Icon d={icons.eye} className="h-4 w-4" /> Xem chi tiết
           </button>
+          {(listing.status === 'Active' || listing.status === 'Draft') && (
+            <button type="button" disabled={busy} onClick={() => onTakeDown(item)} className="inline-flex h-9 items-center gap-1.5 rounded-full border border-red-200 px-3 text-xs font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50">
+              <Icon d={icons.trash} className="h-4 w-4" /> Gỡ tin
+            </button>
+          )}
           {listing.status === 'Pending' && (
             <>
               <button type="button" disabled={busy} onClick={() => onReject(item)} className="inline-flex h-9 items-center gap-1.5 rounded-full border border-red-200 px-3 text-xs font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50">
@@ -71,6 +76,7 @@ export default function AdminListings() {
   const [notice, setNotice] = useState(null);
   const [detail, setDetail] = useState(null);
   const [confirmReject, setConfirmReject] = useState(null);
+  const [confirmTakeDown, setConfirmTakeDown] = useState(null);
 
   const reload = useCallback(() => {
     if (!isAdmin) return undefined;
@@ -95,14 +101,20 @@ export default function AdminListings() {
     setBusyId(item.listing.id);
     setNotice(null);
     try {
-      const updated = action === 'approve' ? await adminService.approve(item.listing.id) : await adminService.reject(item.listing.id);
+      const updated = action === 'approve'
+        ? await adminService.approve(item.listing.id)
+        : action === 'takedown'
+          ? await adminService.takeDown(item.listing.id)
+          : await adminService.reject(item.listing.id);
+      const from = item.listing.status;
       setState((value) => ({
         ...value,
         items: value.items.filter((i) => i.listing.id !== updated.id),
-        counts: { ...value.counts, Pending: (value.counts.Pending || 1) - 1, [updated.status]: (value.counts[updated.status] || 0) + 1 },
+        counts: { ...value.counts, [from]: Math.max((value.counts[from] || 1) - 1, 0), [updated.status]: (value.counts[updated.status] || 0) + 1 },
       }));
       setDetail(null);
-      setNotice({ tone: 'success', text: action === 'approve' ? `Đã duyệt "${item.listing.title}" – tin hiển thị công khai 30 ngày.` : `Đã từ chối "${item.listing.title}".` });
+      const done = { approve: `Đã duyệt "${item.listing.title}" – tin hiển thị công khai 30 ngày.`, reject: `Đã từ chối "${item.listing.title}".`, takedown: `Đã gỡ "${item.listing.title}" khỏi trang công khai.` };
+      setNotice({ tone: 'success', text: done[action] });
     } catch (error) {
       setNotice({ tone: 'error', text: readApiError(error, 'Không thực hiện được.').message });
     } finally {
@@ -110,17 +122,8 @@ export default function AdminListings() {
     }
   };
 
-  if (!isAdmin) {
-    return (
-      <div className="mx-auto max-w-md px-4 py-20 text-center">
-        <p className="text-lg font-bold text-ink">Trang này chỉ dành cho quản trị viên</p>
-        <Link to="/" className="mt-5 inline-flex rounded-full bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white">Về trang chủ</Link>
-      </div>
-    );
-  }
-
   return (
-    <SellerShell title="Duyệt tin đăng" description="Kiểm tra nội dung tin trước khi hiển thị công khai. Tin được duyệt sẽ hiển thị 30 ngày.">
+    <AdminShell title="Duyệt tin đăng" description="Kiểm tra nội dung tin trước khi hiển thị công khai. Tin được duyệt sẽ hiển thị 30 ngày; tin vi phạm có thể gỡ bất cứ lúc nào." pending={state.counts.Pending || 0}>
       <div className="space-y-4">
         <div role="tablist" aria-label="Lọc theo trạng thái" className="flex gap-2 overflow-x-auto pb-1">
           {TABS.map((key) => (
@@ -159,7 +162,7 @@ export default function AdminListings() {
         ) : state.items.length ? (
           <div className="space-y-4">
             {state.items.map((item) => (
-              <ModerationRow key={item.listing.id} item={item} busy={busyId === item.listing.id} onApprove={(i) => moderate(i, 'approve')} onReject={setConfirmReject} onOpen={setDetail} />
+              <ModerationRow key={item.listing.id} item={item} busy={busyId === item.listing.id} onApprove={(i) => moderate(i, 'approve')} onReject={setConfirmReject} onTakeDown={setConfirmTakeDown} onOpen={setDetail} />
             ))}
           </div>
         ) : (
@@ -173,10 +176,10 @@ export default function AdminListings() {
         {detail && (
           <div className="max-h-[70vh] space-y-3 overflow-y-auto text-sm">
             <p className="text-base font-bold text-ink">{detail.listing.title}</p>
-            {detail.listing.images?.length > 0 && (
+            {getUploadedImages(detail.listing).length > 0 && (
               <div className="flex gap-2 overflow-x-auto pb-1">
-                {detail.listing.images.map((image) => (
-                  <NewsImage key={image.id} image={{ url: mediaUrl(image.url) }} className="h-24 w-32 shrink-0 rounded-xl" />
+                {getUploadedImages(detail.listing).map((image) => (
+                  <NewsImage key={image.url} image={image} className="h-24 w-32 shrink-0 rounded-xl" />
                 ))}
               </div>
             )}
@@ -205,6 +208,16 @@ export default function AdminListings() {
           <button type="button" onClick={() => { const item = confirmReject; setConfirmReject(null); moderate(item, 'reject'); }} className="h-10 rounded-full bg-red-600 px-5 text-sm font-semibold text-white hover:bg-red-700">Từ chối tin</button>
         </div>
       </Modal>
-    </SellerShell>
+      <Modal open={Boolean(confirmTakeDown)} title="Gỡ tin đăng?" onClose={() => setConfirmTakeDown(null)}>
+        <p className="text-sm text-slate-600">
+          Tin <strong className="text-ink">{confirmTakeDown?.listing.title}</strong> sẽ bị gỡ khỏi trang công khai và chuyển sang "Bị từ chối".
+          Người đăng có thể sửa nội dung và gửi duyệt lại.
+        </p>
+        <div className="mt-5 flex justify-end gap-2">
+          <button type="button" onClick={() => setConfirmTakeDown(null)} className="h-10 rounded-full border border-slate-200 px-5 text-sm font-semibold text-slate-600">Huỷ</button>
+          <button type="button" onClick={() => { const item = confirmTakeDown; setConfirmTakeDown(null); moderate(item, 'takedown'); }} className="h-10 rounded-full bg-red-600 px-5 text-sm font-semibold text-white hover:bg-red-700">Gỡ tin</button>
+        </div>
+      </Modal>
+    </AdminShell>
   );
 }

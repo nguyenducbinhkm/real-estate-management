@@ -10,6 +10,8 @@ import SellerDashboard from './pages/SellerDashboard';
 import SellerListings from './pages/SellerListings';
 import SellerCustomers from './pages/SellerCustomers';
 import AdminListings from './pages/AdminListings';
+import AdminDashboard from './pages/AdminDashboard';
+import AdminUsers from './pages/AdminUsers';
 import UserProfile from './pages/UserProfile';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -54,7 +56,9 @@ export default function App() {
         <Route path="seller/dashboard" element={protectedPage(<SellerDashboard />)} />
         <Route path="seller/listings" element={protectedPage(<SellerListings />)} />
         <Route path="seller/listings/:id/edit" element={protectedPage(<SellerPost />)} />
+        <Route path="admin" element={protectedPage(<AdminDashboard />)} />
         <Route path="admin/listings" element={protectedPage(<AdminListings />)} />
+        <Route path="admin/users" element={protectedPage(<AdminUsers />)} />
         <Route path="seller/customers" element={protectedPage(<SellerCustomers />)} />
         <Route path="profile" element={protectedPage(<UserProfile />)} />
         <Route path="profile/password" element={protectedPage(<UserProfile />)} />

@@ -92,6 +92,7 @@ export const icons = {
   search: <><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></>,
   arrow: <><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></>,
   edit: <><path d="M4 20h4L19 9l-4-4L4 16v4Z" /><path d="m13.5 6.5 4 4" /></>,
+  users: <><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20a6.5 6.5 0 0 1 13 0" /><circle cx="17.5" cy="9.5" r="2.5" /><path d="M16 14.2a5 5 0 0 1 6 4.8" /></>,
   shield: <><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z" /><path d="m9 12 2 2 4-4" /></>,
   tag: <><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8Z" /><circle cx="7.5" cy="7.5" r="1.5" /></>,
 };
@@ -136,7 +137,7 @@ export default function SellerShell({ title, description, actions, newContacts =
             <SideLink to="/seller/listings" icon={icons.listings}>Quản lý tin đăng</SideLink>
             <SideLink to="/seller/customers" icon={icons.customers} badge={newContacts}>Quản lý khách hàng</SideLink>
             <SideLink to="/seller/post" icon={icons.plus}>Đăng tin mới</SideLink>
-            {user?.role === 'Admin' && <SideLink to="/admin/listings" icon={icons.shield}>Duyệt tin đăng</SideLink>}
+            {user?.role === 'Admin' && <SideLink to="/admin" icon={icons.shield}>Quản trị hệ thống</SideLink>}
             <div className="my-2 border-t border-slate-100" />
             <SideLink to="/profile" icon={icons.settings}>Cài đặt tài khoản</SideLink>
           </nav>

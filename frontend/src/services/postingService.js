@@ -52,4 +52,18 @@ export const adminService = {
   reject(id) {
     return api.patch(`/api/admin/listings/${id}/reject`).then((response) => response.data);
   },
+  /** Gỡ tin vi phạm đang hiển thị/đang ẩn. */
+  takeDown(id) {
+    return api.patch(`/api/admin/listings/${id}/takedown`).then((response) => response.data);
+  },
+  stats() {
+    return api.get('/api/admin/stats').then((response) => response.data);
+  },
+  users(role, q) {
+    return api.get('/api/admin/users', { params: { role: role || undefined, q: q || undefined } }).then((response) => response.data);
+  },
+  /** Đổi vai trò: Buyer, Seller hoặc Agent. */
+  changeRole(id, role) {
+    return api.patch(`/api/admin/users/${id}/role`, { role }).then((response) => response.data);
+  },
 };

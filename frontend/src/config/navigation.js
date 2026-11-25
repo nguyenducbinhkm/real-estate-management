@@ -73,7 +73,7 @@ export const accountMenu = [
   { label: "Tổng quan", to: "/seller/dashboard", seller: true },
   { label: "Quản lý tin đăng", to: "/seller/listings", seller: true },
   { label: "Quản lý khách hàng", to: "/seller/customers", seller: true },
-  { label: "Duyệt tin đăng", to: "/admin/listings", admin: true },
+  { label: "Quản trị hệ thống", to: "/admin", admin: true },
   { label: "Cài đặt tài khoản", to: "/profile" },
   { label: "Đổi mật khẩu", to: "/profile/password" },
 ];
