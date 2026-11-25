@@ -6,18 +6,20 @@ namespace RealEstateHub.Application.Patterns.Strategy;
 
 public class PropertyTypeStrategy : ISearchStrategy
 {
+    // Dùng Where(p => p is X) thay cho OfType<X>().Cast<Property>(): giữ nguyên kiểu IQueryable<Property>
+    // để EF Core dịch được khi ghép với các strategy khác (vd. TransactionTypeStrategy kiểm tra "is ForSaleProperty").
     public IQueryable<Property> Execute(IQueryable<Property> query, SearchCriteria criteria)
         => criteria.Type switch
         {
-            PropertyType.Apartment => query.OfType<Apartment>().Cast<Property>(),
-            PropertyType.House => query.OfType<House>().Cast<Property>(),
-            PropertyType.Villa => query.OfType<Villa>().Cast<Property>(),
-            PropertyType.Shophouse => query.OfType<Shophouse>().Cast<Property>(),
-            PropertyType.RentalApartment => query.OfType<RentalApartment>().Cast<Property>(),
-            PropertyType.RentalHouse => query.OfType<RentalHouse>().Cast<Property>(),
-            PropertyType.Office => query.OfType<Office>().Cast<Property>(),
-            PropertyType.Warehouse => query.OfType<Warehouse>().Cast<Property>(),
-            PropertyType.Land => query.OfType<Land>().Cast<Property>(),
+            PropertyType.Apartment => query.Where(p => p is Apartment),
+            PropertyType.House => query.Where(p => p is House),
+            PropertyType.Villa => query.Where(p => p is Villa),
+            PropertyType.Shophouse => query.Where(p => p is Shophouse),
+            PropertyType.RentalApartment => query.Where(p => p is RentalApartment),
+            PropertyType.RentalHouse => query.Where(p => p is RentalHouse),
+            PropertyType.Office => query.Where(p => p is Office),
+            PropertyType.Warehouse => query.Where(p => p is Warehouse),
+            PropertyType.Land => query.Where(p => p is Land),
             _ => query
         };
 }
