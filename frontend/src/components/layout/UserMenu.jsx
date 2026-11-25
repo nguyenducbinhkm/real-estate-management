@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { accountMenu } from '../../config/navigation';
+import { accountMenuFor } from '../../config/navigation';
 import { ChevronDownIcon } from './Icons';
 
 export function Avatar({ name, className = 'h-9 w-9 text-sm', tone = 'bg-brand-50 text-brand-600' }) {
@@ -58,7 +58,7 @@ export default function UserMenu({ user, onLogout, light = false }) {
             <p className="truncate text-xs text-slate-500">{user.email}</p>
           </div>
           <ul className="py-1">
-            {accountMenu.map((item) => (
+            {accountMenuFor(user).map((item) => (
               <li key={item.to}>
                 <Link
                   role="menuitem"

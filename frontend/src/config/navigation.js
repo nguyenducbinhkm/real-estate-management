@@ -68,12 +68,21 @@ export const mainMenu = [
   },
 ];
 
+// seller: true = chỉ hiện với tài khoản được đăng tin (Người bán, Môi giới, Quản trị).
 export const accountMenu = [
-  { label: 'Tổng quan', to: '/seller/dashboard' },
-  { label: 'Quản lý tin đăng', to: '/seller/listings' },
-  { label: 'Quản lý khách hàng', to: '/seller/customers' },
-  { label: 'Gói hội viên', to: '/seller/membership' },
-  { label: 'Nạp tiền', to: '/seller/top-up' },
-  { label: 'Cài đặt tài khoản', to: '/profile' },
-  { label: 'Đổi mật khẩu', to: '/profile/password' },
+  { label: "Tổng quan", to: "/seller/dashboard", seller: true },
+  { label: "Quản lý tin đăng", to: "/seller/listings", seller: true },
+  { label: "Quản lý khách hàng", to: "/seller/customers", seller: true },
+  { label: "Duyệt tin đăng", to: "/admin/listings", admin: true },
+  { label: "Cài đặt tài khoản", to: "/profile" },
+  { label: "Đổi mật khẩu", to: "/profile/password" },
 ];
+
+export const SELLER_ROLES = ["Seller", "Agent", "Admin"];
+
+/** Tài khoản có được đăng tin (vào khu vực quản lý của người bán) hay không. */
+export const canManageListings = (user) => SELLER_ROLES.includes(user?.role);
+
+/** Menu tài khoản theo vai trò: người mua chỉ thấy các mục cài đặt tài khoản. */
+export const accountMenuFor = (user) =>
+  accountMenu.filter((item) => (!item.seller || canManageListings(user)) && (!item.admin || user?.role === 'Admin'));

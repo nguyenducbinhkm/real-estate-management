@@ -7,6 +7,9 @@ import ProjectsPage from './pages/ProjectsPage';
 import ProjectDetail from './pages/ProjectDetail';
 import SellerPost from './pages/SellerPost';
 import SellerDashboard from './pages/SellerDashboard';
+import SellerListings from './pages/SellerListings';
+import SellerCustomers from './pages/SellerCustomers';
+import AdminListings from './pages/AdminListings';
 import UserProfile from './pages/UserProfile';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -49,12 +52,12 @@ export default function App() {
         <Route path="register" element={<Register />} />
         <Route path="seller/post" element={protectedPage(<SellerPost />)} />
         <Route path="seller/dashboard" element={protectedPage(<SellerDashboard />)} />
-        <Route path="seller/listings" element={protectedPage(<PlaceholderPage title="Quản lý tin đăng" description="Danh sách tin của bạn sẽ kết nối endpoint /api/listings/my." />)} />
-        <Route path="seller/customers" element={protectedPage(<PlaceholderPage title="Quản lý khách hàng" />)} />
-        <Route path="seller/membership" element={protectedPage(<PlaceholderPage title="Gói hội viên" />)} />
-        <Route path="seller/top-up" element={protectedPage(<PlaceholderPage title="Nạp tiền" />)} />
+        <Route path="seller/listings" element={protectedPage(<SellerListings />)} />
+        <Route path="seller/listings/:id/edit" element={protectedPage(<SellerPost />)} />
+        <Route path="admin/listings" element={protectedPage(<AdminListings />)} />
+        <Route path="seller/customers" element={protectedPage(<SellerCustomers />)} />
         <Route path="profile" element={protectedPage(<UserProfile />)} />
-        <Route path="profile/password" element={protectedPage(<PlaceholderPage title="Đổi mật khẩu" />)} />
+        <Route path="profile/password" element={protectedPage(<UserProfile />)} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

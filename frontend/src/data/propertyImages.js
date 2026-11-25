@@ -209,10 +209,22 @@ const byType = {
 };
 const fallback = [s.apt1, s.house1, s.villa1];
 
+import { mediaUrl } from '../services/api';
+
+/** Ảnh thật người đăng tải lên (lưu ở API: /uploads/listings/...), theo thứ tự; ảnh đầu là ảnh đại diện. */
+export function getUploadedImages(listing) {
+  return (listing?.images || [])
+    .filter((image) => image.url?.startsWith('/uploads/'))
+    .sort((a, b) => a.sortOrder - b.sortOrder)
+    .map((image, i) => ({ url: mediaUrl(image.url), alt: listing.title, label: image.caption || `Ảnh ${i + 1}`, uploaded: true }));
+}
+
 const seedOf = (listing) => [...String(listing?.id || listing?.title || '')].reduce((sum, ch) => (sum * 31 + ch.charCodeAt(0)) % 9973, 7);
 
 /** Ảnh minh họa cho một tin đăng theo loại BĐS; cùng một tin luôn ra cùng một ảnh. */
 export function getPropertyImage(listing) {
+  const uploaded = getUploadedImages(listing);
+  if (uploaded.length) return uploaded[0];
   const list = byType[listing?.propertyType] || fallback;
   return list[seedOf(listing) % list.length];
 }
@@ -237,6 +249,8 @@ const gallerySets = {
  * sau đó là các góc khác cùng loại BĐS (mỗi ảnh kèm `label` mô tả góc chụp). Không phải ảnh thật của căn đó.
  */
 export function getPropertyGallery(listing) {
+  const uploaded = getUploadedImages(listing);
+  if (uploaded.length) return uploaded;
   const cover = getPropertyImage(listing);
   const set = gallerySets[listing?.propertyType] || { coverLabel: 'Ảnh minh họa', angles: [] };
   const seen = new Set([cover.url]);

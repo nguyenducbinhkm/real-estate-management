@@ -5,9 +5,11 @@ import Spinner from '../components/ui/Spinner';
 import Badge from '../components/ui/Badge';
 import PropertyCard from '../components/property/PropertyCard';
 import PropertyGallery from '../components/property/PropertyGallery';
+import ContactSellerForm from '../components/property/ContactSellerForm';
 import { AreaIcon, PackageBadge, TransactionIcon } from '../components/property/PropertyIcons';
-import { getPropertyGallery } from '../data/propertyImages';
+import { getPropertyGallery, getUploadedImages } from '../data/propertyImages';
 import { TYPE_LABELS } from '../utils/searchParser';
+import { findKind, FURNITURE_LABELS, legalLabel } from '../data/listingOptions';
 
 const statusLabels = {
   Draft: 'Bản nháp', Pending: 'Chờ duyệt', Active: 'Đang hiển thị', Sold: 'Đã bán', Rented: 'Đã cho thuê', Expired: 'Hết hạn', Rejected: 'Bị từ chối',
@@ -177,6 +179,14 @@ export default function ListingDetail() {
   }
 
   const gallery = getPropertyGallery(listing);
+  const hasRealPhotos = getUploadedImages(listing).length > 0;
+  const features = [
+    ['Phòng ngủ', listing.bedrooms ? `${listing.bedrooms} phòng` : null],
+    ['Phòng tắm, vệ sinh', listing.bathrooms ? `${listing.bathrooms} phòng` : null],
+    [findKind(listing.propertyType)?.floorsLabel || 'Số tầng', listing.floors ? `${listing.floors}` : null],
+    ['Pháp lý', listing.legalStatus !== 'Unknown' ? legalLabel(listing.legalStatus) : null],
+    ['Nội thất', FURNITURE_LABELS[listing.furniture]],
+  ].filter(([, value]) => value);
   const location = [listing.streetAddress, listing.wardName, listing.districtName, listing.provinceName].filter(Boolean).join(', ');
   const isRent = listing.transactionType === 'ForRent';
   const listUrl = `/listings?transactionType=${listing.transactionType}&propertyType=${listing.propertyType}`;
@@ -194,7 +204,7 @@ export default function ListingDetail() {
       <div className="mt-4 grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <article className="min-w-0">
           {/* Thư viện ảnh nhiều góc (ảnh minh họa theo loại BĐS – xem src/data/propertyImages.js). */}
-          <PropertyGallery key={listing.id} images={gallery}>
+          <PropertyGallery key={listing.id} images={gallery} note={hasRealPhotos ? 'Ảnh người đăng cung cấp' : 'Ảnh minh họa'}>
             <PackageBadge packageType={listing.packageType} size="lg" className="pointer-events-none absolute left-4 top-4" />
             <span className="pointer-events-none absolute right-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-ink-900/45 px-3 py-1.5 text-sm font-semibold text-white ring-1 ring-white/30 backdrop-blur-md">
               <TransactionIcon rent={isRent} className="h-4 w-4" />
@@ -242,6 +252,20 @@ export default function ListingDetail() {
               />
             </div>
 
+            {features.length > 0 && (
+              <>
+                <h2 className="mt-7 text-lg font-bold text-ink">Đặc điểm bất động sản</h2>
+                <dl className="mt-3 grid gap-x-8 sm:grid-cols-2">
+                  {features.map(([label, value]) => (
+                    <div key={label} className="flex justify-between gap-4 border-b border-slate-100 py-2.5 text-sm">
+                      <dt className="text-slate-500">{label}</dt>
+                      <dd className="font-semibold text-ink">{value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </>
+            )}
+
             <h2 className="mt-7 text-lg font-bold text-ink">Thông tin mô tả</h2>
             <p className="mt-2 whitespace-pre-line leading-relaxed text-slate-700">{listing.description || listing.summary || 'Chưa có mô tả.'}</p>
           </div>
@@ -262,17 +286,20 @@ export default function ListingDetail() {
                 <p className="text-xs text-slate-500">Thành viên BS Realty</p>
               </div>
             </div>
-            <button
-              type="button"
-              onClick={() => setShowContact(true)}
-              className="mt-4 h-12 w-full rounded-full bg-brand-600 font-semibold text-white shadow-md shadow-brand-600/30 transition-colors hover:bg-brand-700"
-            >
-              Liên hệ người đăng
-            </button>
-            {showContact && (
-              <p className="mt-3 rounded-2xl bg-gold-50 px-4 py-3 text-sm text-gold-700">
-                Chức năng liên hệ trực tiếp đang được phát triển. Bạn có thể gọi hotline của BS Realty để được hỗ trợ.
+            {listing.status === 'Sold' || listing.status === 'Rented' ? (
+              <p className="mt-4 rounded-2xl bg-slate-50 px-4 py-3 text-center text-sm font-semibold text-slate-600">
+                Bất động sản này {listing.status === 'Sold' ? 'đã được bán' : 'đã được cho thuê'}.
               </p>
+            ) : showContact ? (
+              <ContactSellerForm listing={listing} onClose={() => setShowContact(false)} />
+            ) : (
+              <button
+                type="button"
+                onClick={() => setShowContact(true)}
+                className="mt-4 h-12 w-full rounded-full bg-brand-600 font-semibold text-white shadow-md shadow-brand-600/30 transition-colors hover:bg-brand-700"
+              >
+                Liên hệ người đăng
+              </button>
             )}
           </div>
           <Link to="/utilities/tinh-lai-vay" className="flex items-center gap-3 rounded-3xl border border-slate-100 bg-white p-5 shadow-card transition hover:-translate-y-0.5 hover:shadow-lift">

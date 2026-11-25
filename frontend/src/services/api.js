@@ -3,7 +3,10 @@ import { useAuthStore } from '../store/authStore';
 
 // Backend chạy profile "http" ở cổng 5129 (xem src/RealEstateHub.API/Properties/launchSettings.json).
 // Đổi bằng biến môi trường VITE_API_URL nếu backend chạy ở địa chỉ khác.
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5129';
+export const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5129';
+
+/** Đường dẫn file do API phục vụ (vd. ảnh tải lên "/uploads/listings/x.jpg") → URL đầy đủ. */
+export const mediaUrl = (url) => (url && url.startsWith('/') ? `${API_BASE}${url}` : url);
 
 export const api = axios.create({
   baseURL: API_BASE,

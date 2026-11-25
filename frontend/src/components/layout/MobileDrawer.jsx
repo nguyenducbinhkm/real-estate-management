@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { accountMenu, mainMenu } from '../../config/navigation';
+import { accountMenuFor, mainMenu } from '../../config/navigation';
 import { Avatar } from './UserMenu';
 import { ChevronDownIcon, CloseIcon } from './Icons';
 
@@ -112,7 +112,7 @@ export default function MobileDrawer({ open, onClose, user, onLogout }) {
           {user && (
             <div className="py-2">
               <p className="px-5 pb-1 pt-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Tài khoản</p>
-              {accountMenu.map((item) => (
+              {accountMenuFor(user).map((item) => (
                 <Link key={item.to} to={item.to} className="block px-5 py-3 text-[15px] text-[#2c2c2c]">
                   {item.label}
                 </Link>
