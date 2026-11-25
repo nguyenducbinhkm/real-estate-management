@@ -21,6 +21,21 @@ public abstract class User
     public virtual int GetMaxListings()
         => 0;
 
+    /// <summary>Đặt ảnh đại diện mới. Thêm "?v=..." để trình duyệt không dùng lại ảnh cũ đã lưu đệm (file được ghi đè cùng đường dẫn).</summary>
+    public void ChangeAvatar(string publicUrl, DateTime nowUtc)
+    {
+        if (string.IsNullOrWhiteSpace(publicUrl))
+            throw new ArgumentException("Đường dẫn ảnh không hợp lệ.", nameof(publicUrl));
+        AvatarUrl = $"{publicUrl}?v={nowUtc.Ticks}";
+        UpdatedAt = nowUtc;
+    }
+
+    public void RemoveAvatar(DateTime nowUtc)
+    {
+        AvatarUrl = null;
+        UpdatedAt = nowUtc;
+    }
+
     /// <summary>Tạo đối tượng rỗng theo vai trò – dùng để hỏi quy tắc của vai trò (được đăng tin không, tối đa bao nhiêu tin).</summary>
     public static User ForRole(UserRole role) => role switch
     {

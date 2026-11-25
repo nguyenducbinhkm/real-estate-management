@@ -11,14 +11,7 @@ public class UpdateProfileRequestValidator : AbstractValidator<UpdateProfileRequ
             .MaximumLength(200).WithMessage("Họ tên tối đa 200 ký tự.");
         RuleFor(x => x.Phone).NotEmpty().WithMessage("Vui lòng nhập số điện thoại.")
             .Matches(@"^\+?[0-9 .]{8,20}$").WithMessage("Số điện thoại chỉ gồm chữ số (8–20 ký tự).");
-        RuleFor(x => x.AvatarUrl)
-            .MaximumLength(1000).WithMessage("Đường dẫn ảnh tối đa 1000 ký tự.")
-            .Must(BeHttpUrl).WithMessage("Ảnh đại diện phải là đường dẫn http(s) hợp lệ.")
-            .When(x => !string.IsNullOrWhiteSpace(x.AvatarUrl));
     }
-
-    private static bool BeHttpUrl(string? url)
-        => Uri.TryCreate(url, UriKind.Absolute, out var uri) && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
 }
 
 public class ChangePasswordRequestValidator : AbstractValidator<ChangePasswordRequest>

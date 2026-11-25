@@ -1,3 +1,4 @@
+using RealEstateHub.API;
 using RealEstateHub.Application.DTOs.Request;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
@@ -83,6 +84,13 @@ builder.Services.AddScoped<IImageUploadService, ImageUploadService>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IAdminAccountSync, AdminAccountSync>();
+
+// Supabase Storage cho ảnh đại diện: SUPABASE_URL, SUPABASE_KEY, SUPABASE_BUCKET trong file .env cạnh Program.cs
+// (git bỏ qua). Biến môi trường cùng tên, nếu có, sẽ được ưu tiên.
+var dotEnv = DotEnv.Read(Path.Combine(builder.Environment.ContentRootPath, ".env"));
+string? Setting(string key) => Environment.GetEnvironmentVariable(key) ?? dotEnv.GetValueOrDefault(key);
+builder.Services.AddSingleton(new SupabaseStorageOptions(Setting("SUPABASE_URL"), Setting("SUPABASE_KEY"), Setting("SUPABASE_BUCKET")));
+builder.Services.AddHttpClient<IAvatarStorage, SupabaseAvatarStorage>(client => client.Timeout = TimeSpan.FromSeconds(30));
 
 // Danh sách tài khoản admin: sửa file admin-accounts.json (cùng thư mục với Program.cs) rồi chạy lại API.
 builder.Configuration.AddJsonFile("admin-accounts.json", optional: true, reloadOnChange: false);

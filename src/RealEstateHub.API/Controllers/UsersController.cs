@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using RealEstateHub.Application.DTOs.Request;
 using RealEstateHub.Application.Exceptions;
 using RealEstateHub.Application.Interfaces;
+using RealEstateHub.Application.Services;
 
 namespace RealEstateHub.API.Controllers;
 
@@ -45,6 +46,22 @@ public class UsersController : ControllerBase
         await _accounts.ChangePasswordAsync(GetUserId(), request, ct);
         return NoContent();
     }
+
+    /// <summary>Đổi ảnh đại diện: tải 1 ảnh (multipart/form-data, trường "file"), tối đa 2 MB, JPG/PNG/WEBP.</summary>
+    [HttpPut("avatar")]
+    [RequestSizeLimit(AccountService.MaxAvatarBytes + 64 * 1024)]
+    public async Task<IActionResult> UploadAvatar(IFormFile? file, CancellationToken ct)
+    {
+        if (file is null)
+            throw new AppException(400, "INVALID_IMAGE", "Chưa chọn ảnh.");
+        await using var stream = file.OpenReadStream();
+        return Ok(await _accounts.UploadAvatarAsync(GetUserId(), stream, file.Length, ct));
+    }
+
+    /// <summary>Xoá ảnh đại diện.</summary>
+    [HttpDelete("avatar")]
+    public async Task<IActionResult> RemoveAvatar(CancellationToken ct)
+        => Ok(await _accounts.RemoveAvatarAsync(GetUserId(), ct));
 
     private Guid GetUserId()
     {

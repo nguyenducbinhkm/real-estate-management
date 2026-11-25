@@ -15,3 +15,6 @@ src/RealEstateHub.API/wwwroot/uploads/
 
 # Danh sách tài khoản admin (chứa mật khẩu) – xem admin-accounts.example.json
 src/RealEstateHub.API/admin-accounts.json
+
+# File mẫu cấu hình (không chứa bí mật) vẫn được đưa lên git
+!.env.example

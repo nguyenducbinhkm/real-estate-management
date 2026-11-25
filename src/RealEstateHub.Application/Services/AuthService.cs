@@ -84,7 +84,7 @@ public class AuthService : IAuthService
         await _users.AddRefreshTokenAsync(refresh, ct);
 
         var role = user.GetRole().ToString();
-        var dto = new UserDto(user.Id, user.Email, user.Phone, user.FullName, role, user.IsVerified);
+        var dto = new UserDto(user.Id, user.Email, user.Phone, user.FullName, role, user.IsVerified, user.AvatarUrl);
         return new AuthResponse(accessToken, refreshToken, expiresAt, dto);
     }
 }

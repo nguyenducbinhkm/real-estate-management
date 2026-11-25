@@ -17,7 +17,8 @@ public class RealEstateHubProfile : Profile
                 u.Phone,
                 u.FullName,
                 u.GetRole().ToString(),
-                u.IsVerified));
+                u.IsVerified,
+                u.AvatarUrl));
     }
 
     public static ListingDto MapListing(Property p) => new()
