@@ -12,3 +12,6 @@ src/RealEstateHub.API/appsettings.Development.json
 
 # Ảnh người dùng tải lên khi chạy API
 src/RealEstateHub.API/wwwroot/uploads/
+
+# Danh sách tài khoản admin (chứa mật khẩu) – xem admin-accounts.example.json
+src/RealEstateHub.API/admin-accounts.json

@@ -9,6 +9,8 @@ public interface IListingModerationService
     Task<ModerationQueueDto> GetQueueAsync(PropertyStatus? status, string? keyword, CancellationToken ct = default);
     Task<ListingDto> ApproveAsync(Guid listingId, CancellationToken ct = default);
     Task<ListingDto> RejectAsync(Guid listingId, CancellationToken ct = default);
+    /// <summary>Gỡ tin vi phạm đang hiển thị/đang ẩn (chuyển sang Bị từ chối).</summary>
+    Task<ListingDto> TakeDownAsync(Guid listingId, CancellationToken ct = default);
 }
 
 /// <summary>Lưu file ảnh và trả về đường dẫn công khai (vd. /uploads/listings/abc.jpg).</summary>

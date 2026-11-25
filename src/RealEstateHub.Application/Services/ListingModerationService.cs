@@ -32,6 +32,9 @@ public class ListingModerationService : IListingModerationService
     public Task<ListingDto> RejectAsync(Guid listingId, CancellationToken ct = default)
         => ModerateAsync(listingId, (p, now) => p.Reject(now), ct);
 
+    public Task<ListingDto> TakeDownAsync(Guid listingId, CancellationToken ct = default)
+        => ModerateAsync(listingId, (p, now) => p.TakeDown(now), ct);
+
     private async Task<ListingDto> ModerateAsync(Guid listingId, Action<Property, DateTime> action, CancellationToken ct)
     {
         var listing = await _listings.GetByIdAsync(listingId, ct)

@@ -74,6 +74,15 @@ public abstract class Property
         UpdatedAt = nowUtc;
     }
 
+    /// <summary>Admin gỡ tin vi phạm đang hiển thị (hoặc đang ẩn): chuyển sang Bị từ chối; chủ tin có thể sửa rồi gửi duyệt lại.</summary>
+    public void TakeDown(DateTime nowUtc)
+    {
+        if (Status is not (PropertyStatus.Active or PropertyStatus.Draft))
+            throw new InvalidOperationException("Chỉ gỡ được tin đang hiển thị hoặc đang ẩn.");
+        Status = PropertyStatus.Rejected;
+        UpdatedAt = nowUtc;
+    }
+
     /// <summary>
     /// Chủ tin sửa nội dung: tin phải được duyệt lại (về Chờ duyệt), kể cả tin bị từ chối hoặc hết hạn – đây cũng là cách đăng lại.
     /// Tin đã bán / đã cho thuê không sửa được.

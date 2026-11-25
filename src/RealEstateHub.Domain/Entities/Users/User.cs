@@ -20,4 +20,14 @@ public abstract class User
 
     public virtual int GetMaxListings()
         => 0;
+
+    /// <summary>Tạo đối tượng rỗng theo vai trò – dùng để hỏi quy tắc của vai trò (được đăng tin không, tối đa bao nhiêu tin).</summary>
+    public static User ForRole(UserRole role) => role switch
+    {
+        UserRole.Buyer => new Buyer(),
+        UserRole.Seller => new Seller(),
+        UserRole.Agent => new AgentSeller(),
+        UserRole.Admin => new Admin(),
+        _ => throw new ArgumentOutOfRangeException(nameof(role), role, null)
+    };
 }

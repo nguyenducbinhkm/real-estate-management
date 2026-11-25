@@ -1,3 +1,4 @@
+using RealEstateHub.Application.DTOs.Request;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -79,6 +80,12 @@ builder.Services.AddScoped<IContactRequestService, ContactRequestService>();
 builder.Services.AddScoped<ISellerService, SellerService>();
 builder.Services.AddScoped<IListingModerationService, ListingModerationService>();
 builder.Services.AddScoped<IImageUploadService, ImageUploadService>();
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IAdminAccountSync, AdminAccountSync>();
+
+// Danh sách tài khoản admin: sửa file admin-accounts.json (cùng thư mục với Program.cs) rồi chạy lại API.
+builder.Configuration.AddJsonFile("admin-accounts.json", optional: true, reloadOnChange: false);
 
 // Ảnh tin đăng lưu trong wwwroot/uploads/listings của API và được phục vụ dạng file tĩnh.
 var webRoot = Path.Combine(builder.Environment.ContentRootPath, "wwwroot");
@@ -153,6 +160,35 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Không tự chạy migration hay seed: RealEstateHubDb là database có sẵn, cấu trúc do bạn quản lý.
+// Không tự chạy migration: RealEstateHubDb là database có sẵn, cấu trúc do bạn quản lý.
+// Chỉ đồng bộ các tài khoản admin khai báo trong admin-accounts.json.
+await SyncAdminAccountsAsync(app);
 
 app.Run();
+
+static async Task SyncAdminAccountsAsync(WebApplication app)
+{
+    var logger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger("AdminAccounts");
+    var entries = app.Configuration.GetSection("AdminAccounts").Get<List<AdminAccountEntry>>() ?? new();
+    if (entries.Count == 0)
+    {
+        logger.LogInformation("admin-accounts.json: không có tài khoản admin nào được khai báo.");
+        return;
+    }
+
+    try
+    {
+        using var scope = app.Services.CreateScope();
+        var sync = scope.ServiceProvider.GetRequiredService<IAdminAccountSync>();
+        foreach (var result in await sync.SyncAsync(entries))
+        {
+            if (result.Success) logger.LogInformation("Admin {Email}: {Action}", result.Email, result.Action);
+            else logger.LogWarning("Admin {Email}: {Action}", result.Email, result.Action);
+        }
+    }
+    catch (Exception ex)
+    {
+        // Không chặn API khởi động (vd. database chưa bật) – chỉ ghi lỗi.
+        logger.LogError(ex, "Không đồng bộ được tài khoản admin từ admin-accounts.json.");
+    }
+}

@@ -1,0 +1,11 @@
+{
+  "//": "Sao chép file này thành admin-accounts.json (cùng thư mục), sửa danh sách bên dưới rồi chạy lại API. Mỗi lần chạy: email chưa có sẽ được tạo thành tài khoản Admin; email đã có sẽ được nâng lên Admin và cập nhật mật khẩu, họ tên, SĐT theo file. Xoá một dòng khỏi file KHÔNG xoá tài khoản. Password tối thiểu 8 ký tự. File admin-accounts.json chứa mật khẩu nên đã được .gitignore bỏ qua.",
+  "AdminAccounts": [
+    {
+      "Email": "admin@bsrealty.local",
+      "Password": "DoiMatKhauNay123!",
+      "FullName": "Quản trị viên",
+      "Phone": "0900000000"
+    }
+  ]
+}

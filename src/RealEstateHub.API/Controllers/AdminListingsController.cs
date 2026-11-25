@@ -26,4 +26,9 @@ public class AdminListingsController : ControllerBase
     [HttpPatch("{id:guid}/reject")]
     public async Task<IActionResult> Reject(Guid id, CancellationToken ct)
         => Ok(await _moderation.RejectAsync(id, ct));
+
+    /// <summary>Gỡ tin vi phạm đang hiển thị/đang ẩn.</summary>
+    [HttpPatch("{id:guid}/takedown")]
+    public async Task<IActionResult> TakeDown(Guid id, CancellationToken ct)
+        => Ok(await _moderation.TakeDownAsync(id, ct));
 }
