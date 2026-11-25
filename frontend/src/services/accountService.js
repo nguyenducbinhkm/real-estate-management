@@ -11,6 +11,22 @@ export const accountService = {
   changePassword(payload) {
     return api.put('/api/users/me/password', payload);
   },
+  /** Tải ảnh đại diện mới từ máy (backend lưu lên Supabase Storage, ghi đè ảnh cũ). Trả về hồ sơ mới. */
+  uploadAvatar(file, onProgress) {
+    const body = new FormData();
+    body.append('file', file);
+    return api
+      .put('/api/users/me/avatar', body, {
+        // Ghi đè Content-Type JSON mặc định của api – nếu không, axios sẽ đổi FormData thành JSON (lỗi 415).
+        headers: { 'Content-Type': 'multipart/form-data' },
+        timeout: 60000,
+        onUploadProgress: (event) => event.total && onProgress?.(Math.round((event.loaded / event.total) * 100)),
+      })
+      .then((response) => response.data);
+  },
+  removeAvatar() {
+    return api.delete('/api/users/me/avatar').then((response) => response.data);
+  },
 };
 
 /**

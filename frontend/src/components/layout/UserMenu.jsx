@@ -3,8 +3,14 @@ import { Link, useLocation } from 'react-router-dom';
 import { accountMenuFor } from '../../config/navigation';
 import { ChevronDownIcon } from './Icons';
 
-export function Avatar({ name, className = 'h-9 w-9 text-sm', tone = 'bg-brand-50 text-brand-600' }) {
+/** Ảnh đại diện người dùng; không có ảnh (hoặc ảnh lỗi) thì hiện chữ cái đầu của tên. */
+export function Avatar({ name, url, className = 'h-9 w-9 text-sm', tone = 'bg-brand-50 text-brand-600' }) {
+  const [failed, setFailed] = useState(false);
+  useEffect(() => setFailed(false), [url]);
   const initial = (name || '?').trim().charAt(0).toUpperCase();
+  if (url && !failed) {
+    return <img src={url} alt="" onError={() => setFailed(true)} className={`shrink-0 rounded-full object-cover ${className}`} />;
+  }
   return (
     <span className={`grid shrink-0 place-items-center rounded-full font-bold ${tone} ${className}`}>
       {initial}
@@ -45,7 +51,7 @@ export default function UserMenu({ user, onLogout, light = false }) {
           light ? 'text-white hover:bg-white/10' : 'text-[#2c2c2c] hover:bg-slate-50'
         }`}
       >
-        <Avatar name={user.fullName} tone={light ? 'bg-white/20 text-white ring-1 ring-white/40' : 'bg-brand-50 text-brand-600'} />
+        <Avatar name={user.fullName} url={user.avatarUrl} tone={light ? 'bg-white/20 text-white ring-1 ring-white/40' : 'bg-brand-50 text-brand-600'} />
         {/* Màn hình hẹp chỉ hiện ảnh đại diện để tiết kiệm chỗ. */}
         <span className="hidden max-w-[140px] truncate xl:inline">{user.fullName}</span>
         <ChevronDownIcon className="hidden h-4 w-4 xl:block" />

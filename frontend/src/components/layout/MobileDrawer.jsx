@@ -77,7 +77,7 @@ export default function MobileDrawer({ open, onClose, user, onLogout }) {
         <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
           {user ? (
             <div className="flex min-w-0 items-center gap-3">
-              <Avatar name={user.fullName} className="h-10 w-10 text-base" />
+              <Avatar name={user.fullName} url={user.avatarUrl} className="h-10 w-10 text-base" />
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold text-slate-900">{user.fullName}</p>
                 <p className="truncate text-xs text-slate-500">{user.email}</p>

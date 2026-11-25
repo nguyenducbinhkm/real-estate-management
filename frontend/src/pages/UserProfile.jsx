@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { authService } from '../services/authService';
@@ -74,11 +74,112 @@ function Field({ id, label, hint, error, children }) {
   );
 }
 
+/* ------------------------------ Ảnh đại diện ------------------------------ */
+
+const AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const AVATAR_MAX_BYTES = 2 * 1024 * 1024;
+
+/** Nút đổi ảnh đại diện: chọn ảnh từ máy → tải lên ngay (ghi đè ảnh cũ); nút xoá ảnh. */
+function AvatarUploader({ profile, onSaved }) {
+  const inputRef = useRef(null);
+  const [preview, setPreview] = useState('');
+  const [progress, setProgress] = useState(null);
+  const [status, setStatus] = useState({ message: '', tone: '' });
+  const busy = progress !== null;
+
+  useEffect(() => () => preview && URL.revokeObjectURL(preview), [preview]);
+
+  const choose = async (file) => {
+    if (!file) return;
+    if (!AVATAR_TYPES.includes(file.type)) {
+      setStatus({ tone: 'error', message: 'Chỉ hỗ trợ ảnh JPG, PNG hoặc WEBP.' });
+      return;
+    }
+    if (file.size > AVATAR_MAX_BYTES) {
+      setStatus({ tone: 'error', message: 'Ảnh đại diện tối đa 2 MB.' });
+      return;
+    }
+    setPreview(URL.createObjectURL(file));
+    setStatus({ message: '', tone: '' });
+    setProgress(0);
+    try {
+      const saved = await accountService.uploadAvatar(file, setProgress);
+      onSaved(saved);
+      setStatus({ tone: 'success', message: 'Đã cập nhật ảnh đại diện.' });
+    } catch (error) {
+      setStatus({ tone: 'error', message: readApiError(error, 'Không tải được ảnh lên. Vui lòng thử lại.').message });
+    } finally {
+      setPreview('');
+      setProgress(null);
+    }
+  };
+
+  const remove = async () => {
+    setProgress(0);
+    setStatus({ message: '', tone: '' });
+    try {
+      onSaved(await accountService.removeAvatar());
+      setStatus({ tone: 'success', message: 'Đã xoá ảnh đại diện.' });
+    } catch (error) {
+      setStatus({ tone: 'error', message: readApiError(error, 'Không xoá được ảnh.').message });
+    } finally {
+      setProgress(null);
+    }
+  };
+
+  return (
+    <div>
+      <p className="mb-1.5 text-sm font-semibold text-ink">Ảnh đại diện</p>
+      <div className="flex flex-wrap items-center gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+        <div className="relative">
+          <AvatarImage name={profile.fullName} url={preview || profile.avatarUrl} className="h-20 w-20 text-2xl ring-2" />
+          {busy && (
+            <span className="absolute inset-0 grid place-items-center rounded-full bg-black/45 text-xs font-bold text-white">
+              {progress < 100 ? `${progress}%` : '…'}
+            </span>
+          )}
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => inputRef.current?.click()}
+              className="h-10 rounded-full bg-brand-600 px-5 text-sm font-semibold text-white shadow-sm shadow-brand-600/30 transition hover:bg-brand-700 disabled:opacity-60"
+            >
+              {busy ? 'Đang xử lý…' : 'Đổi ảnh đại diện'}
+            </button>
+            {profile.avatarUrl && (
+              <button
+                type="button"
+                disabled={busy}
+                onClick={remove}
+                className="h-10 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-600 transition hover:border-red-200 hover:text-red-600 disabled:opacity-60"
+              >
+                Xoá ảnh
+              </button>
+            )}
+          </div>
+          <p className="mt-2 text-xs text-slate-500">Chọn ảnh JPG, PNG hoặc WEBP từ máy, tối đa 2 MB. Ảnh mới sẽ thay thế ảnh cũ.</p>
+        </div>
+        <input
+          ref={inputRef}
+          type="file"
+          accept={AVATAR_TYPES.join(',')}
+          className="hidden"
+          onChange={(event) => { choose(event.target.files?.[0]); event.target.value = ''; }}
+        />
+      </div>
+      {status.message && <div className="mt-2"><Notice tone={status.tone}>{status.message}</Notice></div>}
+    </div>
+  );
+}
+
 /* ------------------------------ Thông tin cá nhân ------------------------------ */
 
 function ProfileForm({ profile, onSaved }) {
   const initial = useMemo(
-    () => ({ fullName: profile.fullName || '', phone: profile.phone || '', avatarUrl: profile.avatarUrl || '' }),
+    () => ({ fullName: profile.fullName || '', phone: profile.phone || '' }),
     [profile],
   );
   const [form, setForm] = useState(initial);
@@ -87,7 +188,7 @@ function ProfileForm({ profile, onSaved }) {
 
   useEffect(() => setForm(initial), [initial]);
 
-  const dirty = form.fullName !== initial.fullName || form.phone !== initial.phone || form.avatarUrl !== initial.avatarUrl;
+  const dirty = form.fullName !== initial.fullName || form.phone !== initial.phone;
   const set = (name) => (event) => {
     setForm((value) => ({ ...value, [name]: event.target.value }));
     setErrors((value) => ({ ...value, [name]: '' }));
@@ -98,7 +199,6 @@ function ProfileForm({ profile, onSaved }) {
     const next = {};
     if (!form.fullName.trim()) next.fullName = 'Vui lòng nhập họ tên.';
     if (!/^\+?[0-9 .]{8,20}$/.test(form.phone.trim())) next.phone = 'Số điện thoại chỉ gồm chữ số (8–20 ký tự).';
-    if (form.avatarUrl.trim() && !/^https?:\/\/\S+$/i.test(form.avatarUrl.trim())) next.avatarUrl = 'Đường dẫn ảnh phải bắt đầu bằng http:// hoặc https://';
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -111,7 +211,6 @@ function ProfileForm({ profile, onSaved }) {
       const saved = await accountService.updateProfile({
         fullName: form.fullName.trim(),
         phone: form.phone.trim(),
-        avatarUrl: form.avatarUrl.trim() || null,
       });
       onSaved(saved);
       setStatus({ saving: false, message: 'Đã lưu thông tin tài khoản.', tone: 'success' });
@@ -124,6 +223,8 @@ function ProfileForm({ profile, onSaved }) {
 
   return (
     <form onSubmit={submit} noValidate className="space-y-5">
+      <AvatarUploader profile={profile} onSaved={onSaved} />
+
       <div className="grid gap-5 md:grid-cols-2">
         <Field id="fullName" label="Họ và tên" error={errors.fullName}>
           <input id="fullName" value={form.fullName} onChange={set('fullName')} autoComplete="name" maxLength={200} className={fieldClass(errors.fullName)} />
@@ -135,20 +236,6 @@ function ProfileForm({ profile, onSaved }) {
 
       <Field id="email" label="Email đăng nhập" hint="Email dùng để đăng nhập nên không thể thay đổi.">
         <input id="email" value={profile.email} disabled className={`${fieldClass()} cursor-not-allowed text-slate-500`} />
-      </Field>
-
-      <Field id="avatarUrl" label="Ảnh đại diện (đường dẫn ảnh)" error={errors.avatarUrl} hint="Dán đường dẫn ảnh http(s). Để trống để dùng chữ cái đầu của tên.">
-        <div className="flex items-center gap-3">
-          <AvatarImage name={form.fullName} url={form.avatarUrl.trim()} className="h-11 w-11 text-base ring-2" />
-          <input
-            id="avatarUrl"
-            value={form.avatarUrl}
-            onChange={set('avatarUrl')}
-            placeholder="https://…"
-            maxLength={1000}
-            className={fieldClass(errors.avatarUrl)}
-          />
-        </div>
       </Field>
 
       <Notice tone={status.tone}>{status.message}</Notice>
