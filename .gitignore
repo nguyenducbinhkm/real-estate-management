@@ -9,3 +9,6 @@ dist/
 src/RealEstateHub.API/appsettings.Development.json
 *.log
 *.local.md
+
+# Ảnh người dùng tải lên khi chạy API
+src/RealEstateHub.API/wwwroot/uploads/
