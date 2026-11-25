@@ -12,6 +12,18 @@
       "runtimeExecutable": "dotnet",
       "runtimeArgs": ["run", "--project", "src/RealEstateHub.API", "--launch-profile", "http"],
       "port": 5129
+    },
+    {
+      "name": "api-5130",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "src/RealEstateHub.API", "--no-launch-profile", "--", "--urls", "http://localhost:5130", "--environment", "Development", "--Cors:AllowedOrigins:0", "http://localhost:5174"],
+      "port": 5130
+    },
+    {
+      "name": "frontend-5174",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "frontend", "run", "dev", "--", "--port", "5174", "--strictPort", "--mode", "repo5130"],
+      "port": 5174
     }
   ]
 }

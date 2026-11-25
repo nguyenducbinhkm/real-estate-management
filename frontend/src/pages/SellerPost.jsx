@@ -167,6 +167,12 @@ function fromListing(listing) {
   };
 }
 
+/** Icon loại BĐS: ảnh trong public/icons (hình đen nền trắng → mix-blend-multiply để nền trắng hoà vào nền thẻ), không có thì emoji. */
+function KindIcon({ kind, className = '' }) {
+  if (kind.image) return <img src={kind.image} alt="" aria-hidden="true" className={`shrink-0 object-contain mix-blend-multiply ${className}`} />;
+  return <span className={`grid shrink-0 place-items-center text-2xl ${className}`} aria-hidden="true">{kind.icon}</span>;
+}
+
 /* ------------------------------- Ô nhập ------------------------------- */
 
 const inputClass = (error) =>
@@ -244,7 +250,7 @@ function StepType({ form, set, errors, editing }) {
                 form.propertyType === kind.value ? 'border-brand-500 bg-brand-50' : 'border-slate-200 hover:border-brand-300'
               }`}
             >
-              <span className="text-2xl" aria-hidden="true">{kind.icon}</span>
+              <KindIcon kind={kind} className="h-8 w-8" />
               <span className="font-semibold text-ink">{kind.label}</span>
             </button>
           ))}
@@ -470,7 +476,7 @@ function Preview({ form, images }) {
       <p className="px-1 pb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Xem trước tin</p>
       <div className="aspect-[4/3] overflow-hidden rounded-2xl bg-slate-100">
         {cover ? <img src={cover.preview} alt="" className="h-full w-full object-cover" /> : (
-          <div className="grid h-full place-items-center text-sm text-slate-400">{kind ? `${kind.icon} Ảnh minh họa` : 'Chưa có ảnh'}</div>
+          <div className="grid h-full place-items-center text-sm text-slate-400">{kind ? <span className="flex flex-col items-center gap-2"><KindIcon kind={kind} className="h-12 w-12 opacity-40" />Ảnh minh họa</span> : 'Chưa có ảnh'}</div>
         )}
       </div>
       <div className="space-y-1 p-2">

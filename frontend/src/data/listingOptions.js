@@ -5,6 +5,16 @@ export const LEGAL_LABELS = { RedBook: 'Sổ đỏ/Sổ hồng', SaleContract: '
 export const legalLabel = (value) => (value === 'PinkBook' ? LEGAL_LABELS.RedBook : LEGAL_LABELS[value]);
 export const FURNITURE_LABELS = { None: 'Không nội thất', Basic: 'Nội thất cơ bản', Full: 'Nội thất đầy đủ', Luxury: 'Nội thất cao cấp' };
 
+// Icon loại BĐS (frontend/public/icons). Văn phòng, kho xưởng chưa có file icon nên tạm dùng emoji.
+const icon = (file) => `/icons/${encodeURIComponent(file)}`;
+const ICONS = {
+  apartment: icon('chung cư.jpg'),
+  house: icon('nhà riêng.jpg'),
+  villa: icon('biệt thự.jpg'),
+  shophouse: icon('shophouse.jpg'),
+  land: icon('đất nền.jpg'),
+};
+
 /**
  * Các loại BĐS theo hình thức giao dịch, kèm những ô thông tin riêng của từng loại.
  * fields: bedrooms, bathrooms, floors (số tầng/tầng số), legal, furniture, landArea*, ceilingHeight*, clearance*, rentalPeriod, pets.
@@ -12,15 +22,15 @@ export const FURNITURE_LABELS = { None: 'Không nội thất', Basic: 'Nội th�
  */
 export const PROPERTY_KINDS = {
   ForSale: [
-    { value: 'Apartment', label: 'Căn hộ chung cư', icon: '🏢', fields: ['bedrooms', 'bathrooms', 'floors', 'legal', 'furniture'], floorsLabel: 'Tầng số' },
-    { value: 'House', label: 'Nhà riêng', icon: '🏠', fields: ['landArea', 'legal', 'furniture'] },
-    { value: 'Villa', label: 'Biệt thự, liền kề', icon: '🏡', fields: ['landArea', 'bedrooms', 'bathrooms', 'legal', 'furniture'] },
-    { value: 'Shophouse', label: 'Shophouse, nhà phố TM', icon: '🏬', fields: ['landArea', 'floors', 'legal', 'furniture'], floorsLabel: 'Số tầng kinh doanh' },
-    { value: 'Land', label: 'Đất, đất nền', icon: '🌳', fields: ['clearance', 'legal'] },
+    { value: 'Apartment', label: 'Căn hộ chung cư', image: ICONS.apartment, fields: ['bedrooms', 'bathrooms', 'floors', 'legal', 'furniture'], floorsLabel: 'Tầng số' },
+    { value: 'House', label: 'Nhà riêng', image: ICONS.house, fields: ['landArea', 'legal', 'furniture'] },
+    { value: 'Villa', label: 'Biệt thự, liền kề', image: ICONS.villa, fields: ['landArea', 'bedrooms', 'bathrooms', 'legal', 'furniture'] },
+    { value: 'Shophouse', label: 'Shophouse, nhà phố TM', image: ICONS.shophouse, fields: ['landArea', 'floors', 'legal', 'furniture'], floorsLabel: 'Số tầng kinh doanh' },
+    { value: 'Land', label: 'Đất, đất nền', image: ICONS.land, fields: ['clearance', 'legal'] },
   ],
   ForRent: [
-    { value: 'RentalApartment', label: 'Căn hộ chung cư', icon: '🏢', fields: ['bedrooms', 'bathrooms', 'floors', 'furniture', 'rentalPeriod', 'pets'], floorsLabel: 'Tầng số' },
-    { value: 'RentalHouse', label: 'Nhà riêng', icon: '🏠', fields: ['landArea', 'bedrooms', 'bathrooms', 'furniture', 'rentalPeriod'] },
+    { value: 'RentalApartment', label: 'Căn hộ chung cư', image: ICONS.apartment, fields: ['bedrooms', 'bathrooms', 'floors', 'furniture', 'rentalPeriod', 'pets'], floorsLabel: 'Tầng số' },
+    { value: 'RentalHouse', label: 'Nhà riêng', image: ICONS.house, fields: ['landArea', 'bedrooms', 'bathrooms', 'furniture', 'rentalPeriod'] },
     { value: 'Office', label: 'Văn phòng', icon: '💼', fields: ['floors', 'furniture', 'rentalPeriod'], floorsLabel: 'Tầng số' },
     { value: 'Warehouse', label: 'Kho, nhà xưởng', icon: '🏭', fields: ['ceilingHeight', 'rentalPeriod'] },
   ],
