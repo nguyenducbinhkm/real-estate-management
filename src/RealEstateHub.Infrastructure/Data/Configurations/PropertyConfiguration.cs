@@ -22,6 +22,10 @@ public class PropertyConfiguration : IEntityTypeConfiguration<Property>
         builder.Property(p => p.Description).HasColumnType("text");
         builder.Property(p => p.Price).HasPrecision(18, 2).IsRequired();
         builder.Property(p => p.StreetAddress).HasMaxLength(250);
+        builder.Property(p => p.ContactPhone).HasMaxLength(20);
+        builder.Property(p => p.ZaloPhone).HasMaxLength(20);
+        builder.Ignore(p => p.EffectiveContactPhone);
+        builder.Ignore(p => p.EffectiveZaloPhone);
         builder.Property(p => p.Status).HasConversion<string>().HasMaxLength(30);
         builder.Property(p => p.PackageType).HasConversion<string>().HasMaxLength(30);
         builder.Ignore(p => p.TransactionType);

@@ -31,4 +31,9 @@ public class CreateListingRequest
 
     /// <summary>Đường dẫn ảnh theo thứ tự hiển thị (ảnh đầu là ảnh đại diện), lấy từ POST /api/uploads/images.</summary>
     public List<string>? ImageUrls { get; set; }
+
+    /// <summary>Số liên hệ của tin; để trống = dùng số điện thoại trong hồ sơ.</summary>
+    public string? ContactPhone { get; set; }
+    /// <summary>Số Zalo của tin; để trống = dùng số Zalo trong hồ sơ (hoặc số liên hệ).</summary>
+    public string? ZaloPhone { get; set; }
 }

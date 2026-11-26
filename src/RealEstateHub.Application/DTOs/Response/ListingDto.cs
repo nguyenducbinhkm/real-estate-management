@@ -35,6 +35,14 @@ public class ListingDto
     public FurnitureStatus? Furniture { get; set; }
 
     public List<ListingImageDto> Images { get; set; } = new();
+
+    /// <summary>Số liên hệ đã che ("0335 834 ***"); số đầy đủ lấy qua GET /api/listings/{id}/contact.</summary>
+    public string? ContactPhoneMasked { get; set; }
+    /// <summary>Tin có số Zalo để nhắn tin hay không.</summary>
+    public bool HasZalo { get; set; }
 }
+
+/// <summary>Thông tin liên hệ đầy đủ của tin. ZaloPhone/ZaloLink chỉ có khi người xem đã đăng nhập.</summary>
+public record ListingContactDto(string? Phone, string? ZaloPhone, string? ZaloLink, bool HasZalo, bool ZaloRequiresLogin);
 
 public record ListingImageDto(Guid Id, string Url, string? Caption, int SortOrder);

@@ -67,6 +67,13 @@ public class CreateListingRequestValidator : AbstractValidator<CreateListingRequ
             .Equal(true).WithMessage("Chỉ đăng được đất đã giải phóng mặt bằng.")
             .When(x => x.PropertyType == PropertyType.Land);
 
+        RuleFor(x => x.ContactPhone)
+            .Matches(@"^\+?[0-9 .]{8,20}$").WithMessage("Số điện thoại liên hệ chỉ gồm chữ số (8–20 ký tự).")
+            .When(x => !string.IsNullOrWhiteSpace(x.ContactPhone));
+        RuleFor(x => x.ZaloPhone)
+            .Matches(@"^\+?[0-9 .]{8,20}$").WithMessage("Số Zalo chỉ gồm chữ số (8–20 ký tự).")
+            .When(x => !string.IsNullOrWhiteSpace(x.ZaloPhone));
+
         RuleFor(x => x.ImageUrls)
             .Must(urls => urls!.Count <= Property.MaxImages).WithMessage($"Tối đa {Property.MaxImages} ảnh.")
             .When(x => x.ImageUrls is not null);

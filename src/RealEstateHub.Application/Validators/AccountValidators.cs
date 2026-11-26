@@ -11,6 +11,9 @@ public class UpdateProfileRequestValidator : AbstractValidator<UpdateProfileRequ
             .MaximumLength(200).WithMessage("Họ tên tối đa 200 ký tự.");
         RuleFor(x => x.Phone).NotEmpty().WithMessage("Vui lòng nhập số điện thoại.")
             .Matches(@"^\+?[0-9 .]{8,20}$").WithMessage("Số điện thoại chỉ gồm chữ số (8–20 ký tự).");
+        RuleFor(x => x.ZaloPhone)
+            .Matches(@"^\+?[0-9 .]{8,20}$").WithMessage("Số Zalo chỉ gồm chữ số (8–20 ký tự).")
+            .When(x => !string.IsNullOrWhiteSpace(x.ZaloPhone));
     }
 }
 

@@ -12,4 +12,5 @@ public record ProfileDto(
     bool CanPostListing,
     int MaxListings,
     DateTime CreatedAt,
-    DateTime UpdatedAt);
+    DateTime UpdatedAt,
+    string? ZaloPhone = null);

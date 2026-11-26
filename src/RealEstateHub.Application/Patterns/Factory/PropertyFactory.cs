@@ -75,6 +75,7 @@ public class PropertyFactory : IPropertyFactory
         property.Area = request.Area;
         // Phường/xã (WardId) do ListingService tra theo WardCode rồi gán.
         property.StreetAddress = request.StreetAddress;
+        property.SetContactPhones(request.ContactPhone, request.ZaloPhone);
 
         if (property is ForSaleProperty sale)
         {

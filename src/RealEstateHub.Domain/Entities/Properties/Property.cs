@@ -29,6 +29,26 @@ public abstract class Property
     public abstract TransactionType TransactionType { get; }
     public Guid OwnerId { get; set; }
     public User Owner { get; set; } = null!;
+
+    /// <summary>Số liên hệ riêng của tin; null = dùng số điện thoại trong hồ sơ người đăng.</summary>
+    public string? ContactPhone { get; set; }
+    /// <summary>Số Zalo riêng của tin; null = dùng số Zalo trong hồ sơ, rồi tới số liên hệ.</summary>
+    public string? ZaloPhone { get; set; }
+
+    /// <summary>Số liên hệ thực tế của tin (cần nạp Owner nếu tin không có số riêng).</summary>
+    public string? EffectiveContactPhone
+        => PhoneNumber.Normalize(ContactPhone) ?? PhoneNumber.Normalize(Owner?.Phone);
+
+    /// <summary>Số Zalo thực tế: số Zalo của tin → số Zalo hồ sơ → số liên hệ.</summary>
+    public string? EffectiveZaloPhone
+        => PhoneNumber.Normalize(ZaloPhone) ?? PhoneNumber.Normalize(Owner?.ZaloPhone) ?? EffectiveContactPhone;
+
+    /// <summary>Đặt số liên hệ/Zalo cho tin; để trống thì tin dùng số trong hồ sơ người đăng.</summary>
+    public void SetContactPhones(string? contactPhone, string? zaloPhone)
+    {
+        ContactPhone = PhoneNumber.Normalize(contactPhone);
+        ZaloPhone = PhoneNumber.Normalize(zaloPhone);
+    }
     public List<PropertyImage> Images { get; set; } = new();
     public PackageType PackageType { get; set; } = PackageType.Free;
     public int BoostScore { get; set; }

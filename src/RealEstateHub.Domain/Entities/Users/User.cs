@@ -9,6 +9,8 @@ public abstract class User
     public string Phone { get; set; } = string.Empty;
     public string FullName { get; set; } = string.Empty;
     public string? AvatarUrl { get; set; }
+    /// <summary>Số Zalo mặc định (có thể khác số điện thoại); null = dùng số điện thoại.</summary>
+    public string? ZaloPhone { get; set; }
     public bool IsVerified { get; set; }
     public string PasswordHash { get; set; } = string.Empty;
     public List<RefreshToken> RefreshTokens { get; set; } = new();

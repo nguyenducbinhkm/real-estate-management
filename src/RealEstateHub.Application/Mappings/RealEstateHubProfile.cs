@@ -3,6 +3,7 @@ using RealEstateHub.Application.DTOs.Response;
 using RealEstateHub.Domain.Entities.Properties;
 using RealEstateHub.Domain.Entities.Users;
 using RealEstateHub.Domain.Enums;
+using RealEstateHub.Domain.ValueObjects;
 
 namespace RealEstateHub.Application.Mappings;
 
@@ -80,6 +81,8 @@ public class RealEstateHubProfile : Profile
         Images = p.Images
             .OrderBy(i => i.SortOrder)
             .Select(i => new ListingImageDto(i.Id, i.Url, i.Caption, i.SortOrder))
-            .ToList()
+            .ToList(),
+        ContactPhoneMasked = PhoneNumber.Mask(p.EffectiveContactPhone),
+        HasZalo = p.EffectiveZaloPhone is not null
     };
 }

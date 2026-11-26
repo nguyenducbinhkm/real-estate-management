@@ -6,6 +6,7 @@ using RealEstateHub.Application.Mappings;
 using RealEstateHub.Domain.Entities.Locations;
 using RealEstateHub.Domain.Entities.Properties;
 using RealEstateHub.Domain.Enums;
+using RealEstateHub.Domain.ValueObjects;
 using RealEstateHub.Application.Patterns.Builder;
 using RealEstateHub.Application.Patterns.Factory;
 
@@ -53,6 +54,21 @@ public class ListingService : IListingService
         var listing = await _listings.GetByIdAsync(id, ct)
             ?? throw new NotFoundException("Listing not found.");
         return RealEstateHubProfile.MapListing(listing);
+    }
+
+    public async Task<ListingContactDto> GetContactAsync(Guid id, bool isAuthenticated, CancellationToken ct = default)
+    {
+        var listing = await _listings.GetByIdAsync(id, ct)
+            ?? throw new NotFoundException("Không tìm thấy tin đăng.");
+        var phone = listing.EffectiveContactPhone;
+        var zalo = listing.EffectiveZaloPhone;
+        // Ai cũng xem được số điện thoại khi bấm "Hiện số"; nhắn Zalo cần đăng nhập.
+        return new ListingContactDto(
+            phone,
+            isAuthenticated ? zalo : null,
+            isAuthenticated ? PhoneNumber.ZaloLink(zalo) : null,
+            HasZalo: zalo is not null,
+            ZaloRequiresLogin: !isAuthenticated && zalo is not null);
     }
 
     public async Task<ListingDto> CreateAsync(Guid ownerId, CreateListingRequest request, CancellationToken ct = default)
@@ -177,6 +193,7 @@ public class ListingService : IListingService
         listing.Price = r.Price;
         listing.Area = r.Area;
         listing.StreetAddress = r.StreetAddress;
+        listing.SetContactPhones(r.ContactPhone, r.ZaloPhone);
 
         if (listing is ForSaleProperty sale)
         {

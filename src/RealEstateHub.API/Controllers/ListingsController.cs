@@ -38,6 +38,12 @@ public class ListingsController : ControllerBase
     public async Task<IActionResult> Get(Guid id, CancellationToken ct)
         => Ok(await _listings.GetByIdAsync(id, ct));
 
+    /// <summary>Số liên hệ đầy đủ (nút "Hiện số"). Số Zalo chỉ trả về khi đã đăng nhập.</summary>
+    [HttpGet("{id:guid}/contact")]
+    [AllowAnonymous]
+    public async Task<IActionResult> Contact(Guid id, CancellationToken ct)
+        => Ok(await _listings.GetContactAsync(id, User.Identity?.IsAuthenticated == true, ct));
+
     [HttpPost]
     [Authorize]
     public async Task<IActionResult> Create([FromBody] CreateListingRequest request, CancellationToken ct)

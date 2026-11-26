@@ -3,6 +3,7 @@ using RealEstateHub.Application.DTOs.Response;
 using RealEstateHub.Application.Exceptions;
 using RealEstateHub.Application.Interfaces;
 using RealEstateHub.Domain.Entities.Users;
+using RealEstateHub.Domain.ValueObjects;
 
 namespace RealEstateHub.Application.Services;
 
@@ -30,6 +31,7 @@ public class AccountService : IAccountService
         var user = await LoadAsync(userId, ct);
         user.FullName = request.FullName.Trim();
         user.Phone = request.Phone.Trim();
+        user.ZaloPhone = PhoneNumber.Normalize(request.ZaloPhone);
         user.UpdatedAt = DateTime.UtcNow;
         await _users.UpdateAsync(user, ct);
         return ToDto(user);
@@ -104,5 +106,6 @@ public class AccountService : IAccountService
         user.CanPostListing(),
         user.GetMaxListings(),
         user.CreatedAt,
-        user.UpdatedAt);
+        user.UpdatedAt,
+        user.ZaloPhone);
 }
