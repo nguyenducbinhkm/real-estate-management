@@ -13,6 +13,10 @@ export const listingService = {
   getById(id) {
     return api.get(`/api/listings/${id}`).then((response) => response.data);
   },
+  /** Số liên hệ đầy đủ ("Hiện số"); số/đường dẫn Zalo chỉ có khi đã đăng nhập. */
+  contact(id) {
+    return api.get(`/api/listings/${id}/contact`).then((response) => response.data);
+  },
   create(payload) {
     return api.post('/api/listings', payload).then((response) => response.data);
   },

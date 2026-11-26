@@ -6,6 +6,7 @@ import Badge from '../components/ui/Badge';
 import PropertyCard from '../components/property/PropertyCard';
 import PropertyGallery from '../components/property/PropertyGallery';
 import ContactSellerForm from '../components/property/ContactSellerForm';
+import ContactButtons from '../components/property/ContactButtons';
 import { AreaIcon, PackageBadge, TransactionIcon } from '../components/property/PropertyIcons';
 import { getPropertyGallery, getUploadedImages } from '../data/propertyImages';
 import { TYPE_LABELS } from '../utils/searchParser';
@@ -290,16 +291,21 @@ export default function ListingDetail() {
               <p className="mt-4 rounded-2xl bg-slate-50 px-4 py-3 text-center text-sm font-semibold text-slate-600">
                 Bất động sản này {listing.status === 'Sold' ? 'đã được bán' : 'đã được cho thuê'}.
               </p>
-            ) : showContact ? (
-              <ContactSellerForm listing={listing} onClose={() => setShowContact(false)} />
             ) : (
-              <button
-                type="button"
-                onClick={() => setShowContact(true)}
-                className="mt-4 h-12 w-full rounded-full bg-brand-600 font-semibold text-white shadow-md shadow-brand-600/30 transition-colors hover:bg-brand-700"
-              >
-                Liên hệ người đăng
-              </button>
+              <>
+                <ContactButtons listing={listing} />
+                {showContact ? (
+                  <ContactSellerForm listing={listing} onClose={() => setShowContact(false)} />
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setShowContact(true)}
+                    className="mt-2.5 h-11 w-full rounded-2xl border border-brand-200 bg-white text-sm font-semibold text-brand-700 transition-colors hover:bg-brand-50"
+                  >
+                    Gửi yêu cầu liên hệ
+                  </button>
+                )}
+              </>
             )}
           </div>
           <Link to="/utilities/tinh-lai-vay" className="flex items-center gap-3 rounded-3xl border border-slate-100 bg-white p-5 shadow-card transition hover:-translate-y-0.5 hover:shadow-lift">

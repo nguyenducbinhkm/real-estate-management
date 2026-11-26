@@ -5,7 +5,7 @@ import { canManageListings } from '../config/navigation';
 import { listingService } from '../services/listingService';
 import { postingService } from '../services/postingService';
 import { sellerService } from '../services/sellerService';
-import { readApiError } from '../services/accountService';
+import { accountService, readApiError } from '../services/accountService';
 import { FURNITURE_LABELS, LEGAL_LABELS, PROPERTY_KINDS, findKind } from '../data/listingOptions';
 import ImageUploader, { MAX_IMAGES, toImageItem } from '../components/seller/ImageUploader';
 import Spinner from '../components/ui/Spinner';
@@ -42,6 +42,9 @@ const EMPTY = {
   ceilingHeight: '',
   rentalPeriodMonths: '12',
   petsAllowed: false,
+  contactPhone: '',
+  zaloSame: true,
+  zaloPhone: '',
 };
 
 const UNITS = { trieu: 1_000_000, ty: 1_000_000_000 };
@@ -51,12 +54,14 @@ const FIELD_STEP = {
   propertyType: 0, transactionType: 0,
   provinceCode: 1, districtCode: 1, wardCode: 1, streetAddress: 1,
   title: 2, description: 2, price: 2, priceValue: 2, area: 2, landArea: 2, bedrooms: 2, bathrooms: 2, floors: 2,
+  contactPhone: 2, zaloPhone: 2,
   legalStatus: 2, furniture: 2, hasClearance: 2, ceilingHeight: 2, rentalPeriodMonths: 2,
   images: 3,
 };
 // Tên trường của API → tên ô trong form.
 const API_FIELD = { bedroomCount: 'bedrooms', bathroomCount: 'bathrooms', floorNumber: 'floors', imageUrls: 'images', price: 'priceValue' };
 
+const PHONE = /^\+?[0-9 .]{8,20}$/;
 const draftKey = (userId) => `bds_post_draft_${userId}`;
 const toNumber = (value) => {
   const n = Number(String(value).replace(/\s/g, '').replace(',', '.'));
@@ -101,6 +106,8 @@ function validateStep(step, form, images) {
     if (has('rentalPeriod') && !(toNumber(form.rentalPeriodMonths) >= 1 && toNumber(form.rentalPeriodMonths) <= 120)) {
       errors.rentalPeriodMonths = 'Từ 1 đến 120 tháng.';
     }
+    if (!PHONE.test(form.contactPhone.trim())) errors.contactPhone = 'Vui lòng nhập số điện thoại liên hệ hợp lệ.';
+    if (!form.zaloSame && !PHONE.test(form.zaloPhone.trim())) errors.zaloPhone = 'Vui lòng nhập số Zalo hợp lệ.';
   }
   if (step === 3) {
     if (images.some((image) => image.status === 'uploading')) errors.images = 'Đang tải ảnh, vui lòng đợi.';
@@ -135,6 +142,8 @@ function toPayload(form, images) {
     rentalPeriodMonths: has('rentalPeriod') ? optionalInt(form.rentalPeriodMonths) : null,
     petsAllowed: has('pets') ? form.petsAllowed : null,
     imageUrls: images.filter((image) => image.status === 'done').map((image) => image.url),
+    contactPhone: form.contactPhone.trim(),
+    zaloPhone: form.zaloSame ? form.contactPhone.trim() : form.zaloPhone.trim(),
   };
 }
 
@@ -431,6 +440,33 @@ function StepInfo({ form, set, errors }) {
           <span className="font-semibold text-ink">Cho phép nuôi thú cưng</span>
         </label>
       )}
+
+      <fieldset className="rounded-2xl border border-slate-200 p-4">
+        <legend className="px-1 text-sm font-bold text-ink">Thông tin liên hệ</legend>
+        <p className="mb-3 text-xs text-slate-500">Lấy sẵn từ hồ sơ của bạn, có thể đổi riêng cho tin này. Trên trang tin, số được che (VD: 0335 834 ***) cho tới khi khách bấm “Hiện số”; nhắn Zalo yêu cầu khách đăng nhập.</p>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Số điện thoại liên hệ" required error={errors.contactPhone}>
+            <input value={form.contactPhone} onChange={(event) => set({ contactPhone: event.target.value })} inputMode="tel" maxLength={20} placeholder="VD: 0912 345 678" className={inputClass(errors.contactPhone)} />
+          </Field>
+          <div>
+            <Field label="Số Zalo" required={!form.zaloSame} error={errors.zaloPhone}>
+              <input
+                value={form.zaloSame ? form.contactPhone : form.zaloPhone}
+                onChange={(event) => set({ zaloPhone: event.target.value })}
+                disabled={form.zaloSame}
+                inputMode="tel"
+                maxLength={20}
+                placeholder="VD: 0987 654 321"
+                className={`${inputClass(errors.zaloPhone)} disabled:bg-slate-50 disabled:text-slate-500`}
+              />
+            </Field>
+            <label className="mt-2 flex items-center gap-2 text-xs text-slate-600">
+              <input type="checkbox" checked={form.zaloSame} onChange={(event) => set({ zaloSame: event.target.checked })} className="h-4 w-4 accent-brand-600" />
+              Zalo dùng chung số điện thoại liên hệ
+            </label>
+          </div>
+        </div>
+      </fieldset>
     </div>
   );
 }
@@ -442,6 +478,7 @@ function StepReview({ form, images, setImages, errors, goTo }) {
     ['Vị trí', [form.streetAddress, form.wardName, form.districtName, form.provinceName].filter(Boolean).join(', '), 1],
     ['Tiêu đề', form.title, 2],
     ['Giá · Diện tích', `${formatPrice(priceOf(form))}${form.transactionType === 'ForRent' ? '/tháng' : ''} · ${form.area} m²`, 2],
+    ['Liên hệ', `${form.contactPhone} · Zalo: ${form.zaloSame ? 'cùng số' : form.zaloPhone}`, 2],
   ];
   return (
     <div className="space-y-6">
@@ -527,6 +564,13 @@ export default function SellerPost() {
             return;
           }
           setForm(fromListing(listing));
+          // Trang tin chỉ có số đã che → lấy số đầy đủ (người đăng đã đăng nhập nên có cả số Zalo).
+          listingService.contact(id).then((contact) => alive && setForm((value) => ({
+            ...value,
+            contactPhone: contact.phone || '',
+            zaloSame: !contact.zaloPhone || contact.zaloPhone === contact.phone,
+            zaloPhone: contact.zaloPhone && contact.zaloPhone !== contact.phone ? contact.zaloPhone : '',
+          }))).catch(() => {});
           setImages((listing.images || []).filter((image) => image.url?.startsWith('/uploads/')).map((image) => toImageItem(image.url)));
           setStep(2);
           setLoad({ loading: false, error: '' });
@@ -545,6 +589,13 @@ export default function SellerPost() {
       sellerService.dashboard()
         .then((d) => alive && setQuota({ max: d.maxListings, used: d.usedListingSlots }))
         .catch(() => {});
+      // Số liên hệ / số Zalo mặc định lấy từ hồ sơ (vẫn sửa riêng được cho tin này).
+      accountService.getProfile().then((profile) => alive && setForm((value) => ({
+        ...value,
+        contactPhone: value.contactPhone || profile.phone || '',
+        zaloSame: value.zaloPhone ? value.zaloSame : !profile.zaloPhone || profile.zaloPhone === profile.phone,
+        zaloPhone: value.zaloPhone || (profile.zaloPhone && profile.zaloPhone !== profile.phone ? profile.zaloPhone : ''),
+      }))).catch(() => {});
     }
     return () => { alive = false; };
   }, [allowed, editing, id]); // eslint-disable-line react-hooks/exhaustive-deps

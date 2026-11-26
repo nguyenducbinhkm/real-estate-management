@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { useAuthStore } from '../store/authStore';
 import Button from '../components/ui/Button';
@@ -7,6 +7,11 @@ import Input from '../components/ui/Input';
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [params] = useSearchParams();
+  // Chỉ quay lại đường dẫn nội bộ ("/listings/..."), không nhận URL ngoài để tránh chuyển hướng lừa đảo.
+  const redirect = params.get('redirect');
+  const backTo = redirect && redirect.startsWith('/') && !redirect.startsWith('//') ? redirect : '/';
   const setAuth = useAuthStore((state) => state.setAuth);
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
@@ -19,7 +24,7 @@ export default function Login() {
     try {
       const auth = await authService.login(form);
       setAuth(auth);
-      navigate('/');
+      navigate(backTo, { replace: true });
     } catch (err) {
       setError(err.response?.data?.message || 'Đăng nhập thất bại.');
     } finally {
@@ -32,6 +37,7 @@ export default function Login() {
       <section className="rounded-3xl border border-slate-100 bg-white p-7 shadow-lift">
         <h1 className="text-2xl font-black text-slate-900">Đăng nhập</h1>
         <p className="mt-1 text-sm text-slate-500">Tiếp tục quản lý tin và hồ sơ BS Realty.</p>
+        {location.state?.message && <p className="mt-4 rounded-xl bg-brand-50 px-4 py-3 text-sm text-brand-800">{location.state.message}</p>}
         <form className="mt-6 space-y-4" onSubmit={submit}>
           <Input label="Email" name="email" type="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} placeholder="name@example.com" />
           <Input label="Mật khẩu" name="password" type="password" value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} />

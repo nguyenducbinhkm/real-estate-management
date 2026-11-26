@@ -179,7 +179,7 @@ function AvatarUploader({ profile, onSaved }) {
 
 function ProfileForm({ profile, onSaved }) {
   const initial = useMemo(
-    () => ({ fullName: profile.fullName || '', phone: profile.phone || '' }),
+    () => ({ fullName: profile.fullName || '', phone: profile.phone || '', zaloPhone: profile.zaloPhone || '' }),
     [profile],
   );
   const [form, setForm] = useState(initial);
@@ -188,7 +188,7 @@ function ProfileForm({ profile, onSaved }) {
 
   useEffect(() => setForm(initial), [initial]);
 
-  const dirty = form.fullName !== initial.fullName || form.phone !== initial.phone;
+  const dirty = form.fullName !== initial.fullName || form.phone !== initial.phone || form.zaloPhone !== initial.zaloPhone;
   const set = (name) => (event) => {
     setForm((value) => ({ ...value, [name]: event.target.value }));
     setErrors((value) => ({ ...value, [name]: '' }));
@@ -199,6 +199,7 @@ function ProfileForm({ profile, onSaved }) {
     const next = {};
     if (!form.fullName.trim()) next.fullName = 'Vui lòng nhập họ tên.';
     if (!/^\+?[0-9 .]{8,20}$/.test(form.phone.trim())) next.phone = 'Số điện thoại chỉ gồm chữ số (8–20 ký tự).';
+    if (form.zaloPhone.trim() && !/^\+?[0-9 .]{8,20}$/.test(form.zaloPhone.trim())) next.zaloPhone = 'Số Zalo chỉ gồm chữ số (8–20 ký tự).';
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -211,6 +212,7 @@ function ProfileForm({ profile, onSaved }) {
       const saved = await accountService.updateProfile({
         fullName: form.fullName.trim(),
         phone: form.phone.trim(),
+        zaloPhone: form.zaloPhone.trim() || null,
       });
       onSaved(saved);
       setStatus({ saving: false, message: 'Đã lưu thông tin tài khoản.', tone: 'success' });
@@ -233,6 +235,10 @@ function ProfileForm({ profile, onSaved }) {
           <input id="phone" value={form.phone} onChange={set('phone')} autoComplete="tel" inputMode="tel" maxLength={20} className={fieldClass(errors.phone)} />
         </Field>
       </div>
+
+      <Field id="zaloPhone" label="Số Zalo (không bắt buộc)" error={errors.zaloPhone} hint="Để trống nếu Zalo dùng chung số điện thoại ở trên. Khách đã đăng nhập bấm “Chat qua Zalo” trên tin của bạn sẽ nhắn tới số này.">
+        <input id="zaloPhone" value={form.zaloPhone} onChange={set('zaloPhone')} inputMode="tel" maxLength={20} placeholder={form.phone || 'VD: 0912 345 678'} className={fieldClass(errors.zaloPhone)} />
+      </Field>
 
       <Field id="email" label="Email đăng nhập" hint="Email dùng để đăng nhập nên không thể thay đổi.">
         <input id="email" value={profile.email} disabled className={`${fieldClass()} cursor-not-allowed text-slate-500`} />
