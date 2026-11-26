@@ -10,7 +10,7 @@ using RealEstateHub.Domain.Entities.Properties;
 using RealEstateHub.Domain.Entities.Users;
 using RealEstateHub.Domain.Enums;
 
-namespace RealEstateHub.Tests.Application;
+namespace RealEstateHub.UnitTests.Application;
 
 /// <summary>Đăng tin, sửa tin, giới hạn số tin, ảnh và kiểm duyệt của admin.</summary>
 public class ListingPostingTests

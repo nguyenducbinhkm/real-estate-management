@@ -7,7 +7,7 @@ using RealEstateHub.Domain.Enums;
 using RealEstateHub.Infrastructure.Data.Converters;
 using RealEstateHub.Infrastructure.Services;
 
-namespace RealEstateHub.Tests.Infrastructure;
+namespace RealEstateHub.UnitTests.Infrastructure;
 
 public class DatabaseMappingTests
 {

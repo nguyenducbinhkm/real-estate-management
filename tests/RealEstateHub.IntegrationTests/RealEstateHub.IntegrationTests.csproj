@@ -1,10 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\RealEstateHub.Domain\RealEstateHub.Domain.csproj" />
+    <ProjectReference Include="..\RealEstateHub.TestSupport\RealEstateHub.TestSupport.csproj" />
     <ProjectReference Include="..\..\src\RealEstateHub.Application\RealEstateHub.Application.csproj" />
     <ProjectReference Include="..\..\src\RealEstateHub.Infrastructure\RealEstateHub.Infrastructure.csproj" />
   </ItemGroup>

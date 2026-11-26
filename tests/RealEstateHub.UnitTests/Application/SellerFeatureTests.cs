@@ -8,7 +8,7 @@ using RealEstateHub.Domain.Entities.Properties;
 using RealEstateHub.Domain.Entities.Users;
 using RealEstateHub.Domain.Enums;
 
-namespace RealEstateHub.Tests.Application;
+namespace RealEstateHub.UnitTests.Application;
 
 /// <summary>Tổng quan, Quản lý tin đăng (đổi trạng thái) và Quản lý khách hàng của người bán.</summary>
 public class SellerFeatureTests

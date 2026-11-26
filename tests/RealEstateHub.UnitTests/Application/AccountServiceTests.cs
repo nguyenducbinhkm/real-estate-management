@@ -5,7 +5,7 @@ using RealEstateHub.Application.Services;
 using RealEstateHub.Application.Validators;
 using RealEstateHub.Domain.Entities.Users;
 
-namespace RealEstateHub.Tests.Application;
+namespace RealEstateHub.UnitTests.Application;
 
 public class AccountServiceTests
 {

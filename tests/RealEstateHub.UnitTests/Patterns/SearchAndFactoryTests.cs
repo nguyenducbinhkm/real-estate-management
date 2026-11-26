@@ -5,7 +5,7 @@ using RealEstateHub.Domain.Entities.Properties;
 using RealEstateHub.Domain.Entities.Users;
 using RealEstateHub.Domain.Enums;
 
-namespace RealEstateHub.Tests.Patterns;
+namespace RealEstateHub.UnitTests.Patterns;
 
 public class SearchAndFactoryTests
 {

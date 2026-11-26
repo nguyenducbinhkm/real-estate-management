@@ -73,11 +73,31 @@ public class AdminRepository : IAdminRepository
         var roleName = role.ToString();
         int? adminLevel = role == UserRole.Admin ? 1 : null;
         var now = DateTime.UtcNow;
-        await _db.Database.ExecuteSqlInterpolatedAsync(
-            $@"UPDATE ""Users"" SET ""UserRole"" = {roleName}, ""AdminLevel"" = {adminLevel}, ""UpdatedAt"" = {now} WHERE ""UserId"" = {userId}", ct);
-        // Thu hồi phiên đăng nhập: vai trò mới có hiệu lực khi người dùng đăng nhập lại.
-        await _db.Database.ExecuteSqlInterpolatedAsync(
-            $@"UPDATE ""RefreshTokens"" SET ""RevokedAt"" = {now} WHERE ""UserId"" = {userId} AND ""RevokedAt"" IS NULL", ct);
+
+        // 2 bảng (Users + RefreshTokens) trong 1 transaction: lỗi ở bước sau thì bước trước cũng được hoàn tác (ACID).
+        // Nếu bên gọi đã mở transaction thì dùng chung transaction đó.
+        var ownTransaction = _db.Database.CurrentTransaction is null
+            ? await _db.Database.BeginTransactionAsync(ct)
+            : null;
+        try
+        {
+            await _db.Database.ExecuteSqlInterpolatedAsync(
+                $@"UPDATE ""Users"" SET ""UserRole"" = {roleName}, ""AdminLevel"" = {adminLevel}, ""UpdatedAt"" = {now} WHERE ""UserId"" = {userId}", ct);
+            // Thu hồi phiên đăng nhập: vai trò mới có hiệu lực khi người dùng đăng nhập lại.
+            await _db.Database.ExecuteSqlInterpolatedAsync(
+                $@"UPDATE ""RefreshTokens"" SET ""RevokedAt"" = {now} WHERE ""UserId"" = {userId} AND ""RevokedAt"" IS NULL", ct);
+            if (ownTransaction is not null) await ownTransaction.CommitAsync(ct);
+        }
+        catch
+        {
+            if (ownTransaction is not null) await ownTransaction.RollbackAsync(CancellationToken.None);
+            throw;
+        }
+        finally
+        {
+            if (ownTransaction is not null) await ownTransaction.DisposeAsync();
+        }
+
         // Bỏ các thực thể đang theo dõi (kiểu cũ) để lần đọc sau nạp đúng kiểu mới.
         _db.ChangeTracker.Clear();
     }

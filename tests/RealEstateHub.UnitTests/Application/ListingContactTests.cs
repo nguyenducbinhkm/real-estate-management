@@ -9,7 +9,7 @@ using RealEstateHub.Domain.Entities.Users;
 using RealEstateHub.Domain.Enums;
 using RealEstateHub.Domain.ValueObjects;
 
-namespace RealEstateHub.Tests.Application;
+namespace RealEstateHub.UnitTests.Application;
 
 /// <summary>Số liên hệ / số Zalo của tin đăng: che số, thứ tự ưu tiên, nút "Hiện số" và "Chat qua Zalo".</summary>
 public class ListingContactTests

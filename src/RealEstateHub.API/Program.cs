@@ -200,3 +200,6 @@ static async Task SyncAdminAccountsAsync(WebApplication app)
         logger.LogError(ex, "Không đồng bộ được tài khoản admin từ admin-accounts.json.");
     }
 }
+
+/// <summary>Cho phép project API test (WebApplicationFactory&lt;Program&gt;) khởi động ứng dụng trong bộ nhớ.</summary>
+public partial class Program { }

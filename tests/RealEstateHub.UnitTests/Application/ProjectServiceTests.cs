@@ -10,7 +10,7 @@ using RealEstateHub.Domain.Entities.Properties;
 using RealEstateHub.Domain.Enums;
 using RealEstateHub.Domain.ValueObjects;
 
-namespace RealEstateHub.Tests.Application;
+namespace RealEstateHub.UnitTests.Application;
 
 public class ProjectServiceTests
 {

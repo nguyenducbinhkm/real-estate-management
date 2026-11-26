@@ -8,7 +8,7 @@ using RealEstateHub.Domain.Entities.Users;
 using RealEstateHub.Domain.Enums;
 using RealEstateHub.Infrastructure.Services;
 
-namespace RealEstateHub.Tests.Application;
+namespace RealEstateHub.UnitTests.Application;
 
 /// <summary>Tài khoản admin khai báo trong file, quản lý người dùng và gỡ tin.</summary>
 public class AdminFeatureTests
